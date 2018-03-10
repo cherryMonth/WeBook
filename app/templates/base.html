@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+{% block html %}
+<head>
+     <title>{% block title %}{{title|default}}{% endblock title %}</title>
+
+    {%- block metas %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%- endblock metas %}
+    {% block script %}
+    {% endblock script %}
+    {% block styles %}
+    {% endblock styles %}
+</head>
+<body>
+{% block body %}
+{% block navbar %}
+{% endblock navbar %}
+{% block content %}
+{% endblock content %}
+{% block content_script %}
+{% endblock content_script %}
+<footer>
+    {% block footer %}
+    {% endblock footer %}
+</footer>
+{% endblock body %}
+</body>
+{% block js %}
+{% endblock js %}
+{% endblock %}
+</html>

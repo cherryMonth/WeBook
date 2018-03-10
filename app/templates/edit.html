@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block styles %}
+<link rel="stylesheet" href="static\bootstrap\css\bootstrap.css" type="text/css"/>
+<link rel="stylesheet" href="static\bootstrap\css\bootstrap.css.map" type="text/css"/>
+<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+{% endblock %}
+{% block script %}
+<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+ <script type="text/javascript" src="static/bootstrap/js/bootstrap.js"></script>
+ <script type="text/javascript" src="static/bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <h1 class="text-center">Edit Post</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group" style="margin-left:33%;text-align:center">
+                {{ form.title.label(style="margin-right:50%") }}
+                {{ form.title(class='form-control', style="width:50%") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.text.label(style="margin-left:48%;margin-top:30px;font-size:40px;") }}
+                <div id="editormd" class="form-control">
+                    {{ form.text(style="display:none;") }}
+                </div>
+            </div>
+           {{ form.submit(class="btn btn-info submit",style="margin-left:49%", onclick="get_html()") }}
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static',filename='editormd/editormd.min.js') }}"></script>
+
+    <script type="text/javascript">
+        var testEditor;
+
+        $(function () {
+            testEditor = editormd("editormd", {
+                width: "90%",  // 长度
+                height: "700px",  // 宽度
+                theme : "default", // 主题
+                 previewTheme : "default",
+                editorTheme : "base16-light",
+                searchReplace : true,
+                syncScrolling: "single",  // 保存 HTML 到 Textarea
+                 emoji : true,
+                        taskList : true,
+                        tocm            : true,         // Using [TOCM]
+                        tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+                        flowChart : true,             // 开启流程图支持，默认关闭
+                        sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+
+                searchReplace : "true",
+                path: "{{ url_for('static',filename='editormd/lib/') }}"
+            });
+        });
+
+           function get_html() {
+
+                $.getJSON('/get_html', {
+                    html : document.getElementsByClassName("editormd-preview")[0].innerHTML
+                        }, function (data) {
+                            //接受到后台传来的json数据后的动作
+                            console.log(data)
+                        }
+                )
+                return false; }
+    </script>
+
+{% endblock js %}

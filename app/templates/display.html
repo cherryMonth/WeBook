@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>显示</title>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css.map"/>
+    <link rel="stylesheet" href="/static/editormd/css/editormd.css"/>
+</head>
+<body>
+<div class="markdown-body editormd-preview-container">
+   <div class="col-lg-12 post-text">
+     {{ post|markdown|safe }}
+</div>
+</div>
+
+</body>
+</html>

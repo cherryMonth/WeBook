@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {%block title %}Welcome to my personal website!{% endblock %}
+
+    {% block metas %}
+	<meta name="description" content="La casa free real state fully responsive html5/css3 home page website template"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	{% endblock metas %}
+
+    {% block styles %}
+    <link rel="shortcut icon" href={{url_for('static',filename='favicon.ico')}} type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/responsive.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/zoomslider.css" />
+	<link rel="stylesheet" type="text/css"  href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/jasny-bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.css">
+    <link rel="stylesheet" type="text/css"  href="/static/css/style.css">
+	<link rel="stylesheet" type="text/css"  href="/static/css/style-1.css">
+	<link rel="text/plain" type="text/css"  href="/static/bootstrap/css/bootstrap.css.map">
+    <script type="text/javascript" src="/static/js/modernizr-2.6.2.min.js"></script>
+	<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+	function hideURLbar(){ window.scrollTo(0,1); } </script>
+    {% endblock styles %}
+
+	{% endblock head %}
+
+{% block body %}
+
+{%block navbar %}
+
+<div id="demo-1" data-zs-src='["/static/images/1.jpg", "/static/images/2.jpg", "/static/images/3.jpg","/static/images/4.jpg"]' data-zs-overlay="dots">
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<div class="demo-inner-content">
+
+			   <div class="header-w3-agileits" id="home">
+				<header>
+			<div class="wrapper">
+				<a href="#" class="hamburger"></a>
+				<nav>
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/edit">edit</a></li>
+					</ul>
+				</nav>
+			</div>
+
+		</header>
+        <div class="container text-center">
+            <div class="content">
+                <div class="header-text btn">
+                    <h1><span id="head-title" style="color:white"></span></h1>
+                </div>
+            </div>
+
+        </div>
+			</div>
+		</div>
+					</div>
+    </div>
+{% endblock navbar %}
+
+{% block content %}
+      <div id="services">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="section-title">
+                        <h2>Merry Christmas</h2>
+						<div style="margin-left:46%">
+						<hr>
+						</div>
+                    </div>
+                    <p>Nice meet to you.</p>
+                </div>
+            </div>
+
+            <div class="space"></div>
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <div class="service">
+                        <span class="fa fa-book fa-3x"></span>
+                        <h4>Past</h4>
+                        <p>轻轻的风，吹开你紧琐的眉头，让所有的愁向后飞去。请不要回头去追那些不属于你的忧愁，你应该向前奔跑，因为快乐在前方! </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-4">
+                    <div class="service">
+                        <span class="fa fa-bicycle fa-3x"></span>
+                        <h4>Now</h4>
+                        <p>内心越强大，笑的越漂亮。</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-4">
+                    <div class="service">
+                        <span class="fa fa-plug fa-3x"></span>
+                        <h4>Future</h4>
+                        <p> 在许多的犹豫中，你做对了一件事情，那就是勇敢地上路，不要徘徊在许多假设性的框架里。那是人生的一个大关卡，你做了一个正确的选择，那就是：尝试、再尝试，不害怕所有的新鲜事。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="cta">
+        <div class="container text-center">
+            <a href="#" class="btn go-to-btn">Check our shop</a>
+        </div>
+    </div>
+
+<div id="about-us">
+            <div class="row text-center">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="section-title">
+                        <h2>About Us</h2>
+                        <div style="margin-left:48%">
+						<hr>
+						</div>
+                    </div>
+                    <p>有时候，不小心知道了一些事，才发现自己所在乎的事是那么可笑，所以啊，对自己好点，反正已经这么辛苦了。</p>
+
+				</div>
+<div class="col-md-10 col-sm-10" style="margin-left:35%;margin-top:50px;">
+                    <div class="text-center">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="team">
+                                <img src="/static/images/me.jpg" class="img-responsive img-circle" alt="...">
+                                <br>
+                                <h4>就是SSS...J啊</h4>
+                                <p class="small">Web Designer</p>
+                                <div style="margin-left:42%">
+						<hr>
+						</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+{% endblock content %}
+
+{% block content_script %}
+
+<script src="/static/js/jquery-1.11.1.min.js"></script>
+			<script>
+				$(document).ready(function(){
+					$(".dropdown").hover(
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+							$(this).toggleClass('open');
+						},
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+							$(this).toggleClass('open');
+						}
+					);
+				});
+			</script>
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.1.11.1.js"></script>
+	<script type="text/javascript" src="/static/js/typed.js"></script>
+    <script>
+      $(function(){
+          $("#head-title").typed({
+            strings: ["!^1000", "每天都要快乐！^1000"],
+            typeSpeed: 100,
+            loop: true,
+            startDelay: 100
+          });
+      });
+    </script>
+
+			<script type="text/javascript" src="/static/js/jquery.zoomslider.min.js"></script>
+				<script src="/static/js/main.js"></script>
+			<script src="/static/js/simplePlayer.js"></script>
+			<script>
+				$("document").ready(function() {
+					$("#video").simplePlayer();
+				});
+			</script>
+			<script>
+				$("document").ready(function() {
+					$("#video1").simplePlayer();
+				});
+			</script>
+			<script>
+				$("document").ready(function() {
+					$("#video2").simplePlayer();
+				});
+			</script>
+				<script>
+				$("document").ready(function() {
+					$("#video3").simplePlayer();
+				});
+			</script>
+
+{% endblock content_script %}
+
+{% block footer %}
+<footer>
+		<div class="wrapper footer">
+			<ul>
+				<li class="links">
+					<ul>
+						<li><a href="/">Home</a></li>
+					</ul>
+				</li>
+				<li class="about" style="float:right">
+					<ul>
+						<li><a href="http://facebook.com/pixelhint" class="facebook" target="_blank"></a></li>
+						<li><a href="http://twitter.com/pixelhint" class="twitter" target="_blank"></a></li>
+						<li><a href="http://plus.google.com/+Pixelhint" class="google" target="_blank"></a></li>
+						<li><a href="#" class="skype"></a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</footer>
+{% endblock footer%}
+
+{% endblock body %}
