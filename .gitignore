@@ -1,7 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 venv
 .idea
-*.pyc
-*.xml
 .gitignore
+*.xml
+*.ini
+*.pyc
 migrations
