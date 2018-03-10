@@ -5,11 +5,9 @@
 {% endblock metas %}
 {% block styles %}
 {{super()}}
-    <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
     <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
 {% endblock %}
-{% block title %} {{post.title}} {% endblock title %}
 
 {% block body %}
         <div class="demo-inner-content" style="background-color:#666">
@@ -38,15 +36,18 @@
 
 {% block content %}
 
-    <div class="row text-center" style="margin-top:5%;margin-bottom:15%">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="section-title">
-                        <h2>{{post.title}}</h2>
-						<hr>
-                    </div>
-                    {{post.html|safe}}
-				</div>
-            </div>
+<div class="container" style="margin-bottom:20%;margin-top:5%">
+    {% if length > 0 %}
+    <h1>当前共有{{length}}篇文章!</h1>
+    {% for doc in docs %}
+    <li style="color:#c62323"><a href='/display/{{doc.title}}'>{{doc.title}}</a></li>
+    {% endfor %}
+    {% else %}
+    <h3>好遗憾啊,您当前还没有创建过文章。</h3>
+    {% endif %}
+</div>
+
+
 {% endblock content %}
 
 
@@ -72,4 +73,3 @@
 {% endblock content_script %}
 
 {% endblock body %}
-

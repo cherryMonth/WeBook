@@ -1,23 +1,51 @@
-{% extends "base.html" %}
+{% extends "index.html" %}
+{% block metas %}
+{{super()}}
+{% endblock metas %}
 {% block styles %}
-<link rel="stylesheet" href="static\bootstrap\css\bootstrap.css" type="text/css"/>
-<link rel="stylesheet" href="static\bootstrap\css\bootstrap.css.map" type="text/css"/>
-<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+{{super()}}
+    <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
 {% endblock %}
-{% block script %}
-<script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
- <script type="text/javascript" src="static/bootstrap/js/bootstrap.js"></script>
- <script type="text/javascript" src="static/bootstrap/js/bootstrap.min.js"></script>
-{% endblock %}
+{% block title %} 创建博客 {% endblock title %}
 
 {% block body %}
-    <div class="row">
-        <h1 class="text-center">Edit Post</h1>
+        <div class="demo-inner-content" style="background-color:#666">
+			   <div class="header-w3-agileits" id="home">
+			     <div class="inner-header-agile">
+    {% block navbar %}
+    {{super()}}
+    {% endblock navbar %}
+                 </div>
+               </div>
+        </div>
+{% block message %}
+                <div class="container" id="flash" style="text-align:center;margin-top:1%">
+                    <div class="row clearfix">
+                        {% for message in get_flashed_messages(with_categories=True) %}
+						{% if message[1] != 'Please log in to access this page.' %}
+                            <div class="alert alert-{{ message[0] }}">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+								{{ message[1] }}
+                            </div>
+						{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+{% endblock message %}
+
+{% block content %}
+    <div class="row" style="margin-bottom:10%;margin-top:5%">
         <form method="post">
             {{ form.hidden_tag() }}
-            <div class="form-group" style="margin-left:33%;text-align:center">
-                {{ form.title.label(style="margin-right:50%") }}
-                {{ form.title(class='form-control', style="width:50%") }}
+            <div class="container" >
+                <div class="form-group" style="float:left">
+                    {{ form.title(class='form-control', style="width:100%;height:50px;font-size:30px;",value="无标题文章", required="required") }}
+                </div>
+                <div class="form-group" style="float:right">
+                     {{ form.submit(class="btn btn-default submit", style="height:50px", onclick="get_html()") }}
+                </div>
             </div>
 
             <div class="form-group">
@@ -26,10 +54,32 @@
                     {{ form.text(style="display:none;") }}
                 </div>
             </div>
-           {{ form.submit(class="btn btn-info submit",style="margin-left:49%", onclick="get_html()") }}
         </form>
     </div>
-{% endblock %}
+{% endblock content %}
+
+{% block footer %}
+{{super()}}
+{% endblock footer %}
+
+{% block content_script %}
+             <script>
+				$(document).ready(function(){
+					$(".dropdown").hover(
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+							$(this).toggleClass('open');
+						},
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+							$(this).toggleClass('open');
+						}
+					);
+				});
+			</script>
+{% endblock content_script %}
+
+{%  endblock body %}
 
 {% block js %}
     <script src="{{ url_for('static',filename='editormd/editormd.min.js') }}"></script>
@@ -60,13 +110,25 @@
 
            function get_html() {
 
-                $.getJSON('/get_html', {
+            var html = document.getElementsByClassName("editormd-preview")[0].innerHTML;
+            console.log(html);
+                 $.getJSON('/get_html', {
                     html : document.getElementsByClassName("editormd-preview")[0].innerHTML
                         }, function (data) {
                             //接受到后台传来的json数据后的动作
                             console.log(data)
                         }
                 )
+
+                var Code = testEditor.getMarkdown();
+
+                 if(Code.length === 0){
+                     window.onbeforeunload = confirmExit;
+                 function confirmExit()
+                  {
+                 return "Are you sure you want to exit this page?";
+                     }
+                 }
                 return false; }
     </script>
 

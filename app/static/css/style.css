@@ -131,6 +131,7 @@ h1 span {
 /*-- //logo --*/
 /*-- top-nav --*/
 ul.nav.navbar-nav {
+width:70%;
     margin-left: 11em;
 	    margin-top: 1.3em;
 }

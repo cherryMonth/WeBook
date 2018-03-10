@@ -10,45 +10,64 @@
 	{% endblock metas %}
 
     {% block styles %}
-    <link rel="shortcut icon" href={{url_for('static',filename='favicon.ico')}} type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="/static/css/reset.css">
-	<link rel="stylesheet" type="text/css" href="/static/css/responsive.css">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+		function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
     <link rel="stylesheet" type="text/css" href="/static/css/zoomslider.css" />
-	<link rel="stylesheet" type="text/css"  href="/static/bootstrap/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/jasny-bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/animate.css">
-    <link rel="stylesheet" type="text/css"  href="/static/css/style.css">
-	<link rel="stylesheet" type="text/css"  href="/static/css/style-1.css">
-	<link rel="text/plain" type="text/css"  href="/static/bootstrap/css/bootstrap.css.map">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="/static/css/style-1.css" />
+	<link rel="stylesheet" href="/static/css/responsive.css" media="screen">
+	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css.map">
     <script type="text/javascript" src="/static/js/modernizr-2.6.2.min.js"></script>
-	<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
-	function hideURLbar(){ window.scrollTo(0,1); } </script>
     {% endblock styles %}
-
 	{% endblock head %}
 
 {% block body %}
 
-{%block navbar %}
-
-<div id="demo-1" data-zs-src='["/static/images/1.jpg", "/static/images/2.jpg", "/static/images/3.jpg","/static/images/4.jpg"]' data-zs-overlay="dots">
-	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-							<div class="demo-inner-content">
-
+	<div id="demo-1" data-zs-src='["/static/images/2.jpg", "/static/images/1.jpg", "/static/images/3.jpg","/static/images/4.jpg"]' data-zs-overlay="dots">
+		<div class="demo-inner-content">
+		<!--/header-w3l-->
 			   <div class="header-w3-agileits" id="home">
-				<header>
-			<div class="wrapper">
-				<a href="#" class="hamburger"></a>
-				<nav>
-					<ul>
-						<li><a href="/">Home</a></li>
-						<li><a href="/edit">edit</a></li>
-					</ul>
-				</nav>
-			</div>
+			     <div class="inner-header-agile">
+					 {% block navbar %}
+				<nav class="navbar navbar-default">
+					<div class="navbar-header">
+						<h1><a  href="{{url_for('main.index')}}"><span>S</span>ong <span>J</span>ian</a></h1>
+					</div>
+					<!-- navbar-header -->
+					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav">
+								<li><a href="{{url_for('main.index')}}">首页</a></li>
+								<li><a href="#">发现</a></li>
+							<li><a href="#">关注</a></li>
+								<li><a href="#">消息</a></li>
+								<li style="margin-left:50%"><a href="{{url_for('main.edit')}}">写文章</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown"> 你的个人助手 <b class="caret"></b></a>
+								<ul class="dropdown-menu multi-column columns-3">
+									<li>
+									<div class="col-sm-4">
+										<ul class="multi-column-dropdown">
+											<li><a href="{{url_for('main.my_doc')}}">我的文章</a></li>
+											<li><a href="#">收藏的文章</a></li>
+											<li><a href="#">喜欢的文章</a></li>
+											<li><a href="#">设置</a></li>
+											<li><a href="#">帮助与反馈</a></li>
+										</ul>
+									</div>
+									<div class="clearfix"></div>
+									</li>
+								</ul>
+							</li>
 
-		</header>
-        <div class="container text-center">
+						</ul>
+
+					</div>
+					<div class="clearfix"> </div>
+				</nav>
+				{% endblock navbar %}
+
+			<div class="container text-center">
             <div class="content">
                 <div class="header-text btn">
                     <h1><span id="head-title" style="color:white"></span></h1>
@@ -57,10 +76,10 @@
 
         </div>
 			</div>
+
+			   </div>
 		</div>
-					</div>
     </div>
-{% endblock navbar %}
 
 {% block content %}
       <div id="services">
@@ -69,9 +88,7 @@
                 <div class="col-md-8 col-md-offset-2">
                     <div class="section-title">
                         <h2>Merry Christmas</h2>
-						<div style="margin-left:46%">
 						<hr>
-						</div>
                     </div>
                     <p>Nice meet to you.</p>
                 </div>
@@ -116,9 +133,7 @@
                 <div class="col-md-8 col-md-offset-2">
                     <div class="section-title">
                         <h2>About Us</h2>
-                        <div style="margin-left:48%">
 						<hr>
-						</div>
                     </div>
                     <p>有时候，不小心知道了一些事，才发现自己所在乎的事是那么可笑，所以啊，对自己好点，反正已经这么辛苦了。</p>
 
@@ -131,9 +146,7 @@
                                 <br>
                                 <h4>就是SSS...J啊</h4>
                                 <p class="small">Web Designer</p>
-                                <div style="margin-left:42%">
 						<hr>
-						</div>
                             </div>
                         </div>
 
@@ -146,8 +159,7 @@
 {% endblock content %}
 
 {% block content_script %}
-
-<script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
 			<script>
 				$(document).ready(function(){
 					$(".dropdown").hover(
@@ -162,48 +174,21 @@
 					);
 				});
 			</script>
-
-    <script src="/static/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.1.11.1.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.zoomslider.min.js"></script>
 	<script type="text/javascript" src="/static/js/typed.js"></script>
-    <script>
+	<script>
       $(function(){
           $("#head-title").typed({
-            strings: ["!^1000", "每天都要快乐！^1000"],
+            strings: ["123456!^1000", "654321！^1000"],
             typeSpeed: 100,
             loop: true,
             startDelay: 100
           });
       });
     </script>
-
-			<script type="text/javascript" src="/static/js/jquery.zoomslider.min.js"></script>
-				<script src="/static/js/main.js"></script>
-			<script src="/static/js/simplePlayer.js"></script>
-			<script>
-				$("document").ready(function() {
-					$("#video").simplePlayer();
-				});
-			</script>
-			<script>
-				$("document").ready(function() {
-					$("#video1").simplePlayer();
-				});
-			</script>
-			<script>
-				$("document").ready(function() {
-					$("#video2").simplePlayer();
-				});
-			</script>
-				<script>
-				$("document").ready(function() {
-					$("#video3").simplePlayer();
-				});
-			</script>
-
 {% endblock content_script %}
-
 {% block footer %}
+
 <footer>
 		<div class="wrapper footer">
 			<ul>
@@ -226,6 +211,6 @@
 			</ul>
 		</div>
 	</footer>
-{% endblock footer%}
 
+{% endblock footer %}
 {% endblock body %}

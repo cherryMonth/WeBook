@@ -6,10 +6,10 @@ from models import Category
 
 
 class PostForm(FlaskForm):
-    title = StringField('', render_kw={'placeholder': u'主题'}, validators=[DataRequired(), Length(max=20)])
-    text = TextAreaField(u'正文', [DataRequired(), Length(max=1000)])
+    title = StringField("", render_kw={'placeholder': u'主题'}, validators=[DataRequired(), Length(max=20)])
+    text = TextAreaField("", [DataRequired(), Length(max=1000)])
     categories = SelectMultipleField('Categories', coerce=int)
-    submit = SubmitField(u"提交")
+    submit = SubmitField(u"发布文章")
 
     def __init__(self):
         super(PostForm, self).__init__()
