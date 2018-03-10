@@ -15,7 +15,8 @@
     <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
     <link rel="stylesheet" type="text/css" href="/static/css/zoomslider.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/style-1.css" />
+	<link rel="stylesheet" type="text/css" href="/static/css/style-1.css" />
+	<link rel="stylesheet" href="/static/css/responsive.css" media="screen">
     <script type="text/javascript" src="/static/js/modernizr-2.6.2.min.js"></script>
     {% endblock styles %}
 	{% endblock head %}
@@ -245,5 +246,30 @@
       });
     </script>
 {% endblock content_script %}
+{% block footer %}
 
+<footer>
+		<div class="wrapper footer">
+			<ul>
+				<li class="links">
+					<ul>
+						<li><a href="/">Home</a></li>
+						<li><a href="/love">Love</a></li>
+						<li><a href="/static/birthday.html">Merry Christmas</a></li>
+						<li><a href="/about">About</a></li>
+					</ul>
+				</li>
+				<li class="about" style="float:right">
+					<ul>
+						<li><a href="http://facebook.com/pixelhint" class="facebook" target="_blank"></a></li>
+						<li><a href="http://twitter.com/pixelhint" class="twitter" target="_blank"></a></li>
+						<li><a href="http://plus.google.com/+Pixelhint" class="google" target="_blank"></a></li>
+						<li><a href="#" class="skype"></a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</footer>
+
+{% endblock footer %}
 {% endblock body %}
