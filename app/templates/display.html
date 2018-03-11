@@ -12,15 +12,10 @@
 {% block title %} {{post.title}} {% endblock title %}
 
 {% block body %}
-        <div class="demo-inner-content" style="background-color:#666">
-			   <div class="header-w3-agileits" id="home">
-			     <div class="inner-header-agile">
     {% block navbar %}
     {{super()}}
     {% endblock navbar %}
-                 </div>
-               </div>
-        </div>
+
 {% block message %}
                 <div class="container" id="flash" style="text-align:center;margin-top:1%">
                     <div class="row clearfix">
@@ -38,7 +33,7 @@
 
 {% block content %}
 
-    <div class="row text-center" style="margin-top:5%;margin-bottom:15%">
+    <div class="row text-center" style="margin-top:5%">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="section-title">
                         <h2>{{post.title}}</h2>

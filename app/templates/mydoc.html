@@ -10,15 +10,9 @@
 {% endblock %}
 
 {% block body %}
-        <div class="demo-inner-content" style="background-color:#666">
-			   <div class="header-w3-agileits" id="home">
-			     <div class="inner-header-agile">
     {% block navbar %}
     {{super()}}
     {% endblock navbar %}
-                 </div>
-               </div>
-        </div>
 {% block message %}
                 <div class="container" id="flash" style="text-align:center;margin-top:1%">
                     <div class="row clearfix">
@@ -36,7 +30,7 @@
 
 {% block content %}
 
-<div class="container" style="margin-bottom:20%;margin-top:5%">
+<div class="container" style="margin-top:5%">
     {% if length > 0 %}
     <h1>当前共有{{length}}篇文章!</h1>
     {% for doc in docs %}

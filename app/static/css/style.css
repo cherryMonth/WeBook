@@ -118,14 +118,14 @@ input[type="submit"],.w3l_header_left ul li a,.related-post-right h4 a,.comments
     text-transform: uppercase;
 }
 .navbar-header h1 a {
-    color: #FFFFFF;
+    color: #6f6060;
     text-decoration: none;
     display: inline-block;
 	    line-height: 78px;
 		    font-weight: bold;
 }
 h1 span {
-       color: #02a388;
+       color: #fe423f;
     font-size: 1.5em;
 }
 /*-- //logo --*/
@@ -152,14 +152,14 @@ ul.nav.navbar-nav.navbar-right {
     margin-left: 10%;
 }
 .navbar-default .navbar-nav > li > a {
-	font-size: 0.9em;
+	font-size: 1.2em;
     padding: 1em 0.7em;
     position: relative;
     font-weight: 400;
     text-transform: uppercase;
     font-family: 'Lato', sans-serif;
     letter-spacing: 1px;
-	color:#fff;
+	color:#000;
 }
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus,.navbar-default .navbar-nav li a.active {
     color: #fe423f;

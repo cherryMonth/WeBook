@@ -24,15 +24,13 @@
 
 {% block body %}
 
-	<div id="demo-1" data-zs-src='["/static/images/2.jpg", "/static/images/1.jpg", "/static/images/3.jpg","/static/images/4.jpg"]' data-zs-overlay="dots">
-		<div class="demo-inner-content">
-		<!--/header-w3l-->
-			   <div class="header-w3-agileits" id="home">
+{% block navbar %}
+			<div class="demo-inner-content">
+			   <div class="header-w3-agileits">
 			     <div class="inner-header-agile">
-					 {% block navbar %}
-				<nav class="navbar navbar-default">
+            <nav class="navbar navbar-default">
 					<div class="navbar-header">
-						<h1><a  href="{{url_for('main.index')}}"><span>S</span>ong <span>J</span>ian</a></h1>
+						<h1><a  href="{{url_for('main.index')}}"><span>W</span>e<span>B</span>ook</a></h1>
 					</div>
 					<!-- navbar-header -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -41,7 +39,7 @@
 								<li><a href="#">发现</a></li>
 							<li><a href="#">关注</a></li>
 								<li><a href="#">消息</a></li>
-								<li style="margin-left:50%"><a href="{{url_for('main.edit')}}">写文章</a></li>
+								<li style="margin-left:20%"><a href="{{url_for('main.edit')}}">写文章</a></li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"> 你的个人助手 <b class="caret"></b></a>
 								<ul class="dropdown-menu multi-column columns-3">
@@ -61,33 +59,38 @@
 							</li>
 
 						</ul>
-
+						<hr style="width:100%;color:#000">
 					</div>
-					<div class="clearfix"> </div>
 				</nav>
+        </div>
+			</div>
+			   </div>
 				{% endblock navbar %}
 
+	<div class="container" style="width:92%"> <!-- 如果需要全屏则需要把class=container去掉 -->
+	<div id="demo-1" data-zs-src='["/static/images/2.jpg", "/static/images/1.jpg", "/static/images/3.jpg","/static/images/4.jpg"]' data-zs-overlay="dots">
+		<div class="demo-inner-content">
+			   <div class="header-w3-agileits" id="home">
+			     <div class="inner-header-agile">
 			<div class="container text-center">
             <div class="content">
                 <div class="header-text btn">
                     <h1><span id="head-title" style="color:white"></span></h1>
                 </div>
             </div>
-
         </div>
 			</div>
-
 			   </div>
 		</div>
     </div>
-
+</div>
 {% block content %}
       <div id="services">
         <div class="container text-center">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="section-title">
-                        <h2>Merry Christmas</h2>
+                        <h2>We Book</h2>
 						<hr>
                     </div>
                     <p>Nice meet to you.</p>
@@ -189,15 +192,12 @@
 {% endblock content_script %}
 {% block footer %}
 
-<footer>
+<footer style="margin-top:30%">
 		<div class="wrapper footer">
 			<ul>
 				<li class="links">
 					<ul>
-						<li><a href="/">Home</a></li>
-						<li><a href="/love">Love</a></li>
-						<li><a href="/static/birthday.html">Merry Christmas</a></li>
-						<li><a href="/about">About</a></li>
+						<li><a href="/">目前只是测试0.1版本哦. O(∩_∩)O</a></li>
 					</ul>
 				</li>
 				<li class="about" style="float:right">

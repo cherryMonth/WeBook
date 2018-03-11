@@ -11,15 +11,11 @@
 {% block title %} 创建博客 {% endblock title %}
 
 {% block body %}
-        <div class="demo-inner-content" style="background-color:#666">
-			   <div class="header-w3-agileits" id="home">
-			     <div class="inner-header-agile">
+
     {% block navbar %}
     {{super()}}
     {% endblock navbar %}
-                 </div>
-               </div>
-        </div>
+
 {% block message %}
                 <div class="container" id="flash" style="text-align:center;margin-top:1%">
                     <div class="row clearfix">
@@ -36,7 +32,7 @@
 {% endblock message %}
 
 {% block content %}
-    <div class="row" style="margin-bottom:10%;margin-top:5%">
+    <div class="row" style="margin-top:5%">
         <form method="post">
             {{ form.hidden_tag() }}
             <div class="container" >

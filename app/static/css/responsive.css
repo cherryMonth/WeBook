@@ -593,7 +593,7 @@ header nav .login_btn:hover{
 /*  footer  */
 footer{
     padding-top: 20px;
-    background: #282f35;
+    background: #585454;
 }
 
 footer .footer > ul{
@@ -613,14 +613,14 @@ footer .footer > ul > li:last-child{
 
 
 footer .footer > ul > li.links{
-    width: 197px;
+    width: 300px;
 }
 
 footer ul li.links > ul > li{
     display: block;
     width: 100%;
     list-style: none;
-    margin-bottom: 27px;
+    margin-bottom: 10px;
 }
 
 footer ul li.links > ul > li:last-child{
@@ -630,7 +630,7 @@ footer ul li.links > ul > li:last-child{
 footer .footer > ul > li.links li a{
     text-decoration: none;
     display: block;
-    color: #fff;
+    color: #9da4ab;
     font-family: "lato-regular", Helvetica, Arial, sans-serif;
     font-size: 16px;
     letter-spacing: .5px;
