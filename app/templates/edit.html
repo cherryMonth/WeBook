@@ -37,7 +37,7 @@
             {{ form.hidden_tag() }}
             <div class="container" >
                 <div class="form-group" style="float:left">
-                    {{ form.title(class='form-control', style="width:100%;height:50px;font-size:30px;",value="无标题文章", required="required") }}
+                    {{ form.title(class='form-control', style="width:280%;height:50px;font-size:20px;",value="无标题文章", maxlength="30", required="required") }}
                 </div>
                 <div class="form-group" style="float:right">
                      {{ form.submit(class="btn btn-default submit", style="height:50px", onclick="get_html()") }}
@@ -104,28 +104,43 @@
             });
         });
 
-           function get_html() {
+            function get_html() {
+            var html = document.getElementsByClassName("editormd-preview-container")[0].innerHTML;
 
-            var html = document.getElementsByClassName("editormd-preview")[0].innerHTML;
-            console.log(html);
                  $.getJSON('/get_html', {
                     html : document.getElementsByClassName("editormd-preview")[0].innerHTML
                         }, function (data) {
                             //接受到后台传来的json数据后的动作
-                            console.log(data)
+                            console.log(data);
                         }
                 )
-
                 var Code = testEditor.getMarkdown();
 
-                 if(Code.length === 0){
-                     window.onbeforeunload = confirmExit;
-                 function confirmExit()
+                 if(Code.length === 0)
+                 {
+                 window.onbeforeunload = confirmExit;
+                  function confirmExit()
                   {
                  return "Are you sure you want to exit this page?";
-                     }
+                  }
+
+                 }
+                 else if (Code.length > 10000){
+                 alert('文档文本内容总长度为' + Code.length + '，当前最多只能存储为10000字，无法保存！');
+                  window.onbeforeunload = confirmExit;
+                  function confirmExit()
+                  {
+                  return "Are you sure you want to exit this page?";
+                  }
+                 }
+                 else if(html.length > 50000){
+                 alert('文档排版内容总长度为' + html.length + '，当前最多只能存储为50000字，无法保存！');
+                 window.onbeforeunload = htmlType;
+                 function htmlType(){
+                  return "Are you sure you want to exit this page?";
+                  }
                  }
                 return false; }
-    </script>
 
+    </script>
 {% endblock js %}

@@ -19,8 +19,16 @@ def edit():
         p.title = form.title.data
         p.content = form.text.data
         p.html = config['html']
-        if not p.content:
+        if not p.content or not p.html:
             flash(u'您没有创建有效的文档内容，无法保存！', 'warning')
+            return redirect(url_for('main.edit'))
+        if len(p.content) >= 10000:
+            flash(u'文档文本内容总长度为' + str(len(p.content)) + u'，当前最多只能存储为10000字，无法保存！',
+                  'warning')
+            return redirect(url_for('main.edit'))
+        if len(p.html) >= 50000:
+            flash(u'文档排版内容总长度为' + str(len(p.html)) + u'，当前最多只能存储为50000字，无法保存！',
+                  'warning')
             return redirect(url_for('main.edit'))
         p.update_time = datetime.datetime.now()
         db.session.add(p)
@@ -51,7 +59,7 @@ def my_doc():
     return render_template("mydoc.html", length=length, docs=docs)
 
 
-@main.route("/display/<title>", methods=['GET', "POST"])
-def dispaly(title):
-    p = Category.query.filter_by(title=title).first()
+@main.route("/display/<id>", methods=['GET', "POST"])
+def dispaly(id):
+    p = Category.query.filter_by(id=id).first()
     return render_template("display.html",  post=p)

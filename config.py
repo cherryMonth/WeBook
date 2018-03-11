@@ -31,5 +31,5 @@ class ServerConfig(object):
 
 config = {
     "default": ServerConfig,
-    "html": None
+    "html": ""
 }

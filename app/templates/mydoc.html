@@ -34,7 +34,7 @@
     {% if length > 0 %}
     <h1>当前共有{{length}}篇文章!</h1>
     {% for doc in docs %}
-    <li style="color:#c62323"><a href='/display/{{doc.title}}'>{{doc.title}}</a></li>
+    <li style="color:#c62323"><a href='/display/{{doc.id}}'>{{doc.title}}</a></li>
     {% endfor %}
     {% else %}
     <h3>好遗憾啊,您当前还没有创建过文章。</h3>
