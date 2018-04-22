@@ -8,6 +8,8 @@
     <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
 {% endblock %}
+
+
 {% block title %} 创建博客 {% endblock title %}
 
 {% block body %}
@@ -15,7 +17,6 @@
     {% block navbar %}
     {{super()}}
     {% endblock navbar %}
-
 {% block message %}
                 <div class="container" id="flash" style="text-align:center;margin-top:1%">
                     <div class="row clearfix">
@@ -32,15 +33,15 @@
 {% endblock message %}
 
 {% block content %}
-    <div class="row" style="margin-top:5%">
+    <div class="row" style="margin-top:5%" onsubmit="return get_html()">
         <form method="post">
             {{ form.hidden_tag() }}
             <div class="container" >
                 <div class="form-group" style="float:left">
-                    {{ form.title(class='form-control', style="width:280%;height:50px;font-size:20px;",value="无标题文章", maxlength="30", required="required") }}
+                    {{ form.title(class='form-control', style="width:250%;height:50px;font-size:20px;", maxlength="30", required="required") }}
                 </div>
                 <div class="form-group" style="float:right">
-                     {{ form.submit(class="btn btn-default submit", style="height:50px", onclick="get_html()") }}
+                     {{ form.submit(class="btn btn-default submit", style="height:50px") }}
                 </div>
             </div>
 
@@ -81,7 +82,7 @@
     <script src="{{ url_for('static',filename='editormd/editormd.min.js') }}"></script>
 
     <script type="text/javascript">
-        var testEditor;
+
 
         $(function () {
             testEditor = editormd("editormd", {
@@ -104,43 +105,50 @@
             });
         });
 
-            function get_html() {
-            var html = document.getElementsByClassName("editormd-preview-container")[0].innerHTML;
+            $(document).ready(function () {  // 添加了判断 当点击提交时若有内容则不需要提示用户是否保存 当不点击提交跳转其他页面时提示
+            $("#submit").click(function () {
+            if ($(this).attr("done") === undefined) {
+            $(this).attr("done", "true");
+            return;
+            }
+            })
+            })
 
-                 $.getJSON('/get_html', {
-                    html : document.getElementsByClassName("editormd-preview")[0].innerHTML
-                        }, function (data) {
-                            //接受到后台传来的json数据后的动作
-                            console.log(data);
-                        }
-                )
-                var Code = testEditor.getMarkdown();
+            window.onbeforeunload = function confirmExit(){
+            var handler = document.getElementById("text").value;
+            var title = document.getElementById("title").value;
+            if(handler.length > 0 || title.length > 0 )
+            {
+                if($("#submit").attr("done") === undefined){
+                return "Are you want exit?"
+                }
+                else{
+                return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+            }
+
+            function get_html() {
+
+                 var Code = document.getElementById("text").value;
 
                  if(Code.length === 0)
                  {
-                 window.onbeforeunload = confirmExit;
-                  function confirmExit()
-                  {
-                 return "Are you sure you want to exit this page?";
-                  }
+                        alert("您输入正文的内容为空，无法提交!");
+                        return false;
+                 }
 
-                 }
-                 else if (Code.length > 10000){
+                 else if (Code.length > 100000){
                  alert('文档文本内容总长度为' + Code.length + '，当前最多只能存储为10000字，无法保存！');
-                  window.onbeforeunload = confirmExit;
-                  function confirmExit()
-                  {
-                  return "Are you sure you want to exit this page?";
-                  }
+                  return false;
                  }
-                 else if(html.length > 50000){
-                 alert('文档排版内容总长度为' + html.length + '，当前最多只能存储为50000字，无法保存！');
-                 window.onbeforeunload = htmlType;
-                 function htmlType(){
-                  return "Are you sure you want to exit this page?";
-                  }
-                 }
-                return false; }
+
+                return true;
+                }
 
     </script>
 {% endblock js %}

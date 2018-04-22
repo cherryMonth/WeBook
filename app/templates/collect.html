@@ -1,0 +1,98 @@
+{% extends "index.html" %}
+
+{% block metas %}
+{{super()}}
+{% endblock metas %}
+
+{% block title %}我收藏的文章{% endblock title %}
+
+{% block styles %}
+{{super()}}
+    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+    {{super()}}
+    {% endblock navbar %}
+{% block message %}
+                <div class="container" id="flash" style="text-align:center;margin-top:1%">
+                    <div class="row clearfix">
+                        {% for message in get_flashed_messages(with_categories=True) %}
+						{% if message[1] != 'Please log in to access this page.' %}
+                            <div class="alert alert-{{ message[0] }}">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+								{{ message[1] }}
+                            </div>
+						{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+{% endblock message %}
+
+{% block content %}
+    {% if doc_list %}
+    <div id="services">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="section-title">
+                        <h2>一共收藏了{{length}}篇文章!</h2>
+						<hr>
+                    </div>
+                </div>
+            </div>
+    {% for doc in doc_list %}
+            <div class="row" >
+                <div class="col-md-4 col-sm-4" style="width:100%;margin-bottom:20px;">
+                    <div class="service" onclick="window.open('/display/{{doc.id}}')">
+                        <span class="fa fa-book fa-3x"></span>
+                        <h4>{{doc.title}}</h4>
+                        <p style="float:right">收藏时间:{{doc.update_time}}</p>
+                    </div>
+                </div>
+            </div>
+    {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <div id="services">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="section-title">
+                        <h2>您当前还没有收藏过文章，继续努力吧!</h2>
+						<hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    {% endif %}
+
+{% endblock content %}
+
+
+{% block footer %}
+{{super()}}
+{% endblock footer %}
+
+{% block content_script %}
+             <script>
+				$(document).ready(function(){
+					$(".dropdown").hover(
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+							$(this).toggleClass('open');
+						},
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+							$(this).toggleClass('open');
+						}
+					);
+				});
+			</script>
+{% endblock content_script %}
+
+{% endblock body %}

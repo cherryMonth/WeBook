@@ -1537,7 +1537,7 @@ div#home {
 .table td, .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
     padding: 15px !important;
     font-size: 0.85em;
-    color: #999;
+    color: #c59a6d;
     border-top: none !important;
 }
 .btn {

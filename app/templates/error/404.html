@@ -1,0 +1,65 @@
+{% extends "index.html" %}
+
+{% block title %} 页面丢失了... {% endblock title %}
+{% block styles %}
+{{super()}}
+    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+{% endblock %}
+{% block body %}
+
+{% block navbar %}
+    {{super()}}
+    {% endblock navbar %}
+
+{% block message %}
+                    <script>
+					function close_flash(){
+					var btn = document.getElementById('flash')
+                    btn.style.display = 'none'
+          			}
+				</script>
+                <div class="container" id="flash" style="text-align:center;margin-top:1%">
+                    <div class="row clearfix">
+                        {% for message in get_flashed_messages(with_categories=True) %}
+						{% if message[1] != 'Please log in to access this page.' %}
+                            <div class="alert alert-{{ message[0] }}">
+                                <button type="button" class="close" data-dismiss="alert" onclick="close_flash()">&times;</button>
+								{{ message[1] }}
+                            </div>
+						{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+{% endblock message %}
+
+{% block content %}
+<img src="/static/images/404.jpg" style="margin-left:35%">
+<div style="text-align:center">
+    <h3>页面找不到了，试试其他页面吧...</h3>
+    <li><a href="/" style="color:red">返回首页</a></li>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{super()}}
+{% endblock footer %}
+
+{% block content_script %}
+             <script>
+				$(document).ready(function(){
+					$(".dropdown").hover(
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+							$(this).toggleClass('open');
+						},
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+							$(this).toggleClass('open');
+						}
+					);
+				});
+			</script>
+{% endblock content_script %}
+
+{% endblock %}

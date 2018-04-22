@@ -1,0 +1,129 @@
+{% extends "index.html" %}
+
+{% block script %}
+	<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+	<script src="{{ url_for('static',filename='js/jquery.validate.min.js') }}"></script>
+	<script src="{{ url_for('static',filename='js/messages_zh.js') }}"></script>
+	<script>
+		$().ready(function() {
+    $("#form").validate();
+		});
+	</script>
+{% endblock script %}
+
+
+{% block styles %}
+    {{super()}}
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+
+	<style>
+	.main {
+    width: 500px;
+    height: 600px;
+    margin: 60px auto 0;
+    padding: 50px 30px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(0,0,0,.1);
+    vertical-align: middle;
+    display: inline-block;
+	}
+
+	.sign-in-button {
+    width: 100%;
+    padding: 9px 18px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    color: #fff;
+    background: #3db922;
+    cursor: pointer;
+    outline: none;
+    display: block;
+    clear: both;
+}
+
+	</style>
+{% endblock %}
+
+{% block title %} 修改信息 {% endblock title %}
+
+{% block body %}
+
+   {% block navbar %}
+    {{super()}}
+    {% endblock navbar %}
+		{% block message %}
+				<script>
+					function close_flash(){
+					var btn = document.getElementById('flash')
+                    btn.style.display = 'none'
+          			}
+				</script>
+                <div class="container" id="flash" style="text-align:center;">
+                    <div class="row clearfix">
+                        {% for message in get_flashed_messages(with_categories=True) %}
+						{% if message[1] != 'Please log in to access this page.' %}
+                            <div class="alert alert-{{ message[0] }}">
+                                <button type="button" class="close" data-dismiss="alert" onclick="close_flash()">&times;</button>
+								{{ message[1] }}
+                            </div>
+						{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+			{% endblock message %}
+
+{% block content %}
+			<div class="main" style="margin-left:37%">
+				<div style="font-size:30px;">
+					<a style="color:#ea6f5a;padding: 10px;border-bottom: 2px solid #ea6f5a;">修改信息</a>
+				</div>
+					<div class="col-sm-5">
+							<form id="form" method="post" class="form">
+								<div class="form-group" style="color:red;width:370px;margin-top:10%">
+		        				 <label class="control-label" for="email" style="color:black">邮箱</label>
+									<input class="form-control" id="email" name="email" value="{{current_user.email}}" required type="email"  minlength="2" maxlength="20" >
+								</div>
+								<div class="form-group" style="color:red;width:370px;margin-top:5%">
+									<label class="control-label" for="username" style="color:black">用户名</label>
+									<input class="form-control"  id="username" name="username" value="{{current_user.username}}" required type="text"  minlength="3" maxlength="15" >
+								</div>
+								<div class="form-group" style="color:red;width:370px;margin-top:5%">
+									<label class="control-label" for="password" style="color:black">密码</label>
+									<input class="form-control"  id="password" name="password" required type="password" minlength="6" maxlength="10" >
+								</div>
+								<div class="form-group" style="color:red;width:370px;margin-top:5%">
+									<label class="control-label" for="password2" style="color:black">确认密码</label>
+									<input class="form-control"  id="password2" name="password2" required type="password" minlength="6" equalTo="#password"  maxlength="10">
+								</div>
+								<div class="form-group" style="margin-top:20%">
+									{{ form.submit(class="sign-in-button", style="margin-top:20%;width:400px;height:60px;") }}
+								</div>
+							</form>
+						</div>
+					</div>
+{% endblock content %}
+
+{% block footer %}
+{{super()}}
+{% endblock footer %}
+
+{% block content_script %}
+             <script>
+				$(document).ready(function(){
+					$(".dropdown").hover(
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+							$(this).toggleClass('open');
+						},
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+							$(this).toggleClass('open');
+						}
+					);
+				});
+			</script>
+{% endblock content_script %}
+
+{% endblock body %}

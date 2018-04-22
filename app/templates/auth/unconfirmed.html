@@ -1,0 +1,79 @@
+{% extends "index.html" %}
+
+{% block metas %}
+{{super()}}
+{% endblock metas %}
+
+{% block styles %}
+{{super()}}
+    <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+{% endblock %}
+
+{% block title %}WeBook - 请验证您的账户{% endblock %}
+
+{% block body %}
+
+    {% block navbar %}
+    {{super()}}
+    {% endblock navbar %}
+
+{% block message %}
+                <div class="container" id="flash" style="text-align:center;margin-top:1%">
+                    <div class="row clearfix">
+                        {% for message in get_flashed_messages(with_categories=True) %}
+						{% if message[1] != 'Please log in to access this page.' %}
+                            <div class="alert alert-{{ message[0] }}">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+								{{ message[1] }}
+                            </div>
+						{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+{% endblock message %}
+
+
+{% block content %}
+<div class="container">
+<div class="page-header">
+    <h1>
+        你好, {{ current_user.username }}!
+    </h1>
+    <h3>您至今尚未验证您的账户.</h3>
+    <p>
+        在您验证通过之前无法访问其他页面!
+        <br>
+        请核实您的邮箱，您应该收到一封验证邮件，验证完成后刷新本页面即可正常使用。
+    </p>
+    <p>
+        需要再来一封验证邮件吗?
+        <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+    </p>
+</div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{super()}}
+{% endblock footer %}
+
+{% block content_script %}
+             <script>
+				$(document).ready(function(){
+					$(".dropdown").hover(
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
+							$(this).toggleClass('open');
+						},
+						function() {
+							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
+							$(this).toggleClass('open');
+						}
+					);
+				});
+			</script>
+{% endblock content_script %}
+
+{% endblock %}

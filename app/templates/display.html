@@ -5,43 +5,117 @@
 {% endblock metas %}
 {% block styles %}
 {{super()}}
-    <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
-    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/editormd.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/marked.min.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/prettify.min.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/raphael.min.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/underscore.min.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/sequence-diagram.min.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/flowchart.min.js') }}"></script>
+<script src="{{ url_for('static',filename='editormd/lib/jquery.flowchart.min.js') }}"></script>
+
 {% endblock %}
 {% block title %} {{post.title}} {% endblock title %}
 
 {% block body %}
-    {% block navbar %}
-    {{super()}}
-    {% endblock navbar %}
+{% block navbar %}
+{{super()}}
+{% endblock navbar %}
 
 {% block message %}
-                <div class="container" id="flash" style="text-align:center;margin-top:1%">
-                    <div class="row clearfix">
-                        {% for message in get_flashed_messages(with_categories=True) %}
-						{% if message[1] != 'Please log in to access this page.' %}
-                            <div class="alert alert-{{ message[0] }}">
-                                <button type="button" class="close" data-dismiss="alert">&times;</button>
-								{{ message[1] }}
-                            </div>
-						{% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+<div class="container" id="flash" style="text-align:center;margin-top:1%">
+    <div class="row clearfix">
+        {% for message in get_flashed_messages(with_categories=True) %}
+        {% if message[1] != 'Please log in to access this page.' %}
+        <div class="alert alert-{{ message[0] }}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message[1] }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock message %}
 
 {% block content %}
 
-    <div class="row text-center" style="margin-top:5%">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="section-title">
-                        <h2>{{post.title}}</h2>
-						<hr>
-                    </div>
-                    {{post.html|safe}}
-				</div>
+<div class="container" style="display: block;">
+    <div class="markdown-body editormd-preview-container">
+        <div class="section-title" style="margin-bottom:5%">
+            <h2>{{post.title}}</h2>
+            <div style="float:right">
+                {% if not current_user.is_anonymous %}
+                {% if is_collect %}
+                <a href="/cancel/{{post.id}}">取消收藏</a>
+                {% else %}
+                <a href="/collect/{{post.id}}">收藏该文章</a>
+                {% endif %}
+                {% endif %}
             </div>
+
+        </div>
+        <div id="editormd-view">
+            <textarea name="editormd-markdown-doc">{{post.content}}</textarea>
+        </div>
+
+    </div>
+
+    {% if comments %}
+    <table class='table table-hover'>
+        <tr>
+            <th style="color:black">评论者</th>
+            <th style="color:black">评论内容</th>
+            <th style="color:black">评论时间</th>
+        </tr>
+        {% for comment in comments %}
+        <tr>
+            <td style="color:black">{{comment.author}}</td>
+            <td style="color:black">{{comment.body|safe}}</td>
+            <td style="color:black">{{comment.timestamp}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <button class="btn btn-default" style="float:right;margin-right: 3%;margin-bottom: 5%;float:left" onclick="addcomment()">添加评论</button>
+    <button id="remove" class="btn btn-default" style="display: none" onclick="removecomment()">取消</button>
+    <div id="comments">
+        <script>
+            function addcomment() {
+                var handler = document.getElementById("addcomment")
+                handler.setAttribute("style", "margin-top:20px;")
+                var btn = document.getElementById("remove")
+                btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
+            }
+
+            function removecomment() {
+                var handler = document.getElementById("addcomment")
+                handler.setAttribute("style", "display:none")
+                var btn = document.getElementById("remove")
+                btn.setAttribute("style", "display: none")
+            }
+
+        </script>
+        <br>
+        <div id="addcomment" style="display:none;margin-top:50px;">
+            <hr style="width: 100%;">
+            <form id="form" method="post" action="/add_comment/{{post.id}}">
+                <div class="form-group">
+                    <textarea name="comment" class="textarea" , style="width:400px;height:60px;float:left"
+                              placeholder="最多只能输入150字哦..."></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-default btn" , style="float:right">提交</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
 {% endblock content %}
 
 
@@ -50,20 +124,44 @@
 {% endblock footer %}
 
 {% block content_script %}
-             <script>
-				$(document).ready(function(){
-					$(".dropdown").hover(
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
-							$(this).toggleClass('open');
-						},
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
-							$(this).toggleClass('open');
-						}
-					);
-				});
-			</script>
+<script>
+
+    $(function () {
+        var testEditormdView;
+        testEditormdView = editormd.markdownToHTML("editormd-view", {
+            width: "90%",  // 长度
+            height: "700px",  // 宽度
+            theme: "default", // 主题
+            previewTheme: "default",
+            editorTheme: "base16-light",
+            searchReplace: true,
+            syncScrolling: "single",  // 保存 HTML 到 Textarea
+            emoji: true,
+            taskList: true,
+            tocm: true,         // Using [TOCM]
+            tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+            flowChart: true,             // 开启流程图支持，默认关闭
+            sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
+
+            searchReplace: "true",
+            path: "{{ url_for('static',filename='editormd/lib/') }}"
+        });
+    });
+
+    $(document).ready(function () {
+        $(".dropdown").hover(
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $(this).toggleClass('open');
+            },
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $(this).toggleClass('open');
+            }
+        );
+    });
+
+</script>
 {% endblock content_script %}
 
 {% endblock body %}

@@ -16,3 +16,13 @@ SQLAlchemy==1.2.5
 tornado==5.0
 Werkzeug==0.14.1
 WTForms==2.1
+
+<div class="container" style="display: block;">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="section-title">
+                        <h2>{{post.title}}</h2>
+						<hr>
+                    </div>
+        {{post.html|safe}}
+</div>
+</div>

@@ -3,39 +3,72 @@
 {% block metas %}
 {{super()}}
 {% endblock metas %}
+
+{% block title%}个人文章{% endblock title%}
+
 {% block styles %}
 {{super()}}
-    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+<style>
+    table {
+        /*为表格设置合并边框模型*/
+        border-collapse: collapse;
+        /*列宽由表格宽度和列宽度设定*/
+        table-layout: fixed;
+    }
+</style>
+<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-    {% block navbar %}
-    {{super()}}
-    {% endblock navbar %}
+{% block navbar %}
+{{super()}}
+{% endblock navbar %}
 {% block message %}
-                <div class="container" id="flash" style="text-align:center;margin-top:1%">
-                    <div class="row clearfix">
-                        {% for message in get_flashed_messages(with_categories=True) %}
-						{% if message[1] != 'Please log in to access this page.' %}
-                            <div class="alert alert-{{ message[0] }}">
-                                <button type="button" class="close" data-dismiss="alert">&times;</button>
-								{{ message[1] }}
-                            </div>
-						{% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+<div class="container" id="flash" style="text-align:center;margin-top:1%">
+    <div class="row clearfix">
+        {% for message in get_flashed_messages(with_categories=True) %}
+        {% if message[1] != 'Please log in to access this page.' %}
+        <div class="alert alert-{{ message[0] }}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message[1] }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock message %}
 
 {% block content %}
 
-<div class="container" style="margin-top:5%">
+<div class="container" style="margin-top:2%;">
     {% if length > 0 %}
     <h1>当前共有{{length}}篇文章!</h1>
-    {% for doc in docs %}
-    <li style="color:#c62323"><a href='/display/{{doc.id}}'>{{doc.title}}</a></li>
-    {% endfor %}
+    <table class='table table-hover' id="my_table">
+        <tr>
+            <th>文章名称</th>
+            <th>更新时间</th>
+            <th>操作</th>
+        </tr>
+        {% for doc in docs %}
+        <tr id="{{docs.index(doc) + 1}}">
+            <td style="width:100%;word-wrap:break-word;">
+                <li style="color:#c62323;">
+                    <a href='/display/{{doc.id}}'>{{doc.title}}</a>
+                </li>
+            </td>
+            <td style="color: black;width:100%;word-wrap:break-word;">
+                {{ doc.update_time }}
+            </td>
+            <td style="width:100%;word-wrap:break-word;">
+                <a href='/download/{{doc.id}}'>导出为PDF</a>
+                <a href='/del_file/{{doc.id}}' style="margin-left: 5%">删除</a>
+                <a href='/edit_file/{{doc.id}}' style="margin-left: 5%">编辑</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="margin-left:40%;margin-top:5%" id="barcon" name="barcon"></div>
     {% else %}
     <h3>好遗憾啊,您当前还没有创建过文章。</h3>
     {% endif %}
@@ -50,20 +83,77 @@
 {% endblock footer %}
 
 {% block content_script %}
-             <script>
-				$(document).ready(function(){
-					$(".dropdown").hover(
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
-							$(this).toggleClass('open');
-						},
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
-							$(this).toggleClass('open');
-						}
-					);
-				});
-			</script>
+<script>
+
+    goPage(1, 10);
+
+    function goPage(pno, psize) {
+        var itable = document.getElementById("my_table");//通过ID找到表格
+        var num = itable.rows.length - 1;//表格所有行数(所有记录数)
+        var totalPage = 0;//总页数
+        var pageSize = psize;//每页显示行数
+        //总共分几页
+        if (num / pageSize > parseInt(num / pageSize)) {
+            totalPage = parseInt(num / pageSize) + 1;
+        } else {
+            totalPage = parseInt(num / pageSize);
+        }
+        var currentPage = pno;//当前页数
+        var startRow = (currentPage - 1) * pageSize + 1;//开始显示的行  1
+        var endRow = currentPage * pageSize;//结束显示的行   15
+        endRow = (endRow > num) ? num : endRow;
+        //遍历显示数据实现分页
+        console.log(startRow)
+        console.log(endRow)
+        for (var i = 1; i <= num ; i++) {
+            var tr = document.getElementById(i + "");
+            if (i < startRow || i > endRow) {
+                tr.setAttribute("style", "display:none")
+            }
+            else{
+                tr.setAttribute("style", "")
+            }
+
+
+        }
+        var tempStr = "";
+        if (currentPage > 1) {
+            tempStr += "<a href=\"#\" onClick=\"goPage(" + (currentPage - 1) + "," + psize + ")\"><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>"
+        } else {
+            tempStr += "<a href=\"#\" onClick=\"goPage(" + 1 + "," + psize + ")\"><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>"
+        }
+
+        for (var j = 1; j <= totalPage; j++) {
+            if (j === currentPage) {
+                tempStr += "<a href=\"#\" style='color: #c59a6d;font-weight:bold;' onClick=\"goPage(" + j + "," + psize + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a>"
+            }
+            else {
+                tempStr += "<a href=\"#\" onClick=\"goPage(" + j + "," + psize + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a>"
+            }
+        }
+
+        if (currentPage < totalPage) {
+            tempStr += "<a href=\"#\" onClick=\"goPage(" + (currentPage + 1) + "," + psize + ")\">下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>";
+        } else {
+            tempStr += "<a href=\"#\" onClick=\"goPage(" + totalPage + "," + psize + ")\">下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>";
+        }
+        document.getElementById("barcon").innerHTML = tempStr;
+    }
+
+    $(document).ready(function () {
+        $(".dropdown").hover(
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $(this).toggleClass('open');
+            },
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $(this).toggleClass('open');
+            }
+        );
+    });
+
+</script>
 {% endblock content_script %}
 
 {% endblock body %}
