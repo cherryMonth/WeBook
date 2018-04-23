@@ -272,8 +272,12 @@ def find_file():
     form = FindFile()
     hot_doc_list = Category.query.from_statement(
         "SELECT * FROM markdown.category ORDER BY collect_num DESC LIMIT 5 ;").all()
+    for doc in hot_doc_list:
+        doc.username = User.query.filter_by(id=doc.user).first().username
     if form.validate_on_submit():
         doc_list = Category.query.whoosh_search(form.input.data).all()
+        for doc in doc_list:
+            doc.username = User.query.filter_by(id=doc.user).first().username
         length = len(doc_list)
         if not doc_list:
             flash(u"没有找到符合要求的文章!", "warning")
