@@ -117,6 +117,8 @@ def cancel(key):
         return redirect("/display/" + key)
     else:
         db.session.delete(is_collect)
+        p.collect_num -= 1
+        db.session.add(p)
         db.session.commit()
         flash(u"取消收藏成功!", "success")
         return redirect("/display/" + key)
@@ -165,12 +167,14 @@ def collect(key):
     f = Favorite()
     f.favorite_id = current_user.id
     f.favorited_id = key
+    p.collect_num += 1
     f.update_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if Favorite.query.filter_by(favorite_id=current_user.id, favorited_id=key).first():
         flash(u'文章已经收藏！', 'warning')
         return redirect("/display/" + key)
 
     db.session.add(f)
+    db.session.add(p)
     db.session.commit()
     flash(u'收藏成功！', 'success')
     return redirect("/display/" + key)
@@ -266,6 +270,8 @@ def downloader(key):
 @main.route("/find_file", methods=['GET', 'POST'])
 def find_file():
     form = FindFile()
+    hot_doc_list = Category.query.from_statement(
+        "SELECT * FROM markdown.category ORDER BY collect_num DESC LIMIT 5 ;").all()
     if form.validate_on_submit():
         doc_list = Category.query.whoosh_search(form.input.data).all()
         length = len(doc_list)
@@ -273,7 +279,7 @@ def find_file():
             flash(u"没有找到符合要求的文章!", "warning")
             return redirect(url_for("main.find_file"))
         return render_template("find_file.html", form=form, doc_list=doc_list, length=length)
-    return render_template("find_file.html", form=form)
+    return render_template("find_file.html", form=form, hot_doc_list=hot_doc_list)
 
 
 @main.route("/edit_info", methods=['GET', 'POST'])
