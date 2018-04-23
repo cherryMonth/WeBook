@@ -158,7 +158,7 @@ pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="Si
 @main.route("/collect/<key>", methods=['GET', 'POST'])
 @login_required
 def collect(key):
-    p = Category.query.filter_by(id=key, user=current_user.id).first()
+    p = Category.query.filter_by(id=key).first()
     if not p:
         flash(u'该文章不存在！', 'warning')
         abort(404)
