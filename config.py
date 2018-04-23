@@ -17,11 +17,11 @@ except Exception as e:
 
 class ServerConfig(object):
     SECRET_KEY = "hard to guess string"
-    MAIL_SERVER = "smtp.qq.com"
+    MAIL_SERVER = "smtp.gmail.com"
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get("ENAIL")
-    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+    MAIL_USERNAME = "" # os.environ.get("ENAIL")
+    MAIL_PASSWORD = "sj123456" # os.environ.get("EMAIL_PASSWORD")
     FLASK_MAIL_SENDER = os.environ.get("EMAIL")
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
