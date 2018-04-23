@@ -16,7 +16,6 @@
 <script src="{{ url_for('static',filename='editormd/lib/sequence-diagram.min.js') }}"></script>
 <script src="{{ url_for('static',filename='editormd/lib/flowchart.min.js') }}"></script>
 <script src="{{ url_for('static',filename='editormd/lib/jquery.flowchart.min.js') }}"></script>
-
 {% endblock %}
 {% block title %} {{post.title}} {% endblock title %}
 
@@ -62,25 +61,33 @@
         </div>
 
     </div>
+    <hr style="width: 100%;margin-top:10%">
 
     {% if comments %}
-    <table class='table table-hover'>
+    <table data-toggle="table" class="table-hover table">
+        <thead>
         <tr>
             <th style="color:black">评论者</th>
             <th style="color:black">评论内容</th>
             <th style="color:black">评论时间</th>
+            <th style="color:black">操作</th>
         </tr>
+        </thead>
+        <tbody>
         {% for comment in comments %}
-        <tr>
             <td style="color:black">{{comment.author}}</td>
             <td style="color:black">{{comment.body|safe}}</td>
             <td style="color:black">{{comment.timestamp}}</td>
+            <td style="color:black">{{comment.html|safe}}</td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
     {% endif %}
 
-    <button class="btn btn-default" style="float:right;margin-right: 3%;margin-bottom: 5%;float:left" onclick="addcomment()">添加评论</button>
+    <button class="btn btn-default" style="float:right;margin-right: 3%;margin-bottom: 5%;float:left"
+            onclick="addcomment()">添加评论
+    </button>
     <button id="remove" class="btn btn-default" style="display: none" onclick="removecomment()">取消</button>
     <div id="comments">
         <script>
@@ -98,6 +105,15 @@
                 btn.setAttribute("style", "display: none")
             }
 
+            function edit_comment(key) {
+                var handler = document.getElementById("addcomment")
+                handler.setAttribute("style", "margin-top:20px;")
+                var btn = document.getElementById("remove")
+                btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
+                var form = document.getElementById("form")
+                form.setAttribute("action", "/edit_comment/"+key)
+            }
+
         </script>
         <br>
         <div id="addcomment" style="display:none;margin-top:50px;">
@@ -105,7 +121,7 @@
             <form id="form" method="post" action="/add_comment/{{post.id}}">
                 <div class="form-group">
                     <textarea name="comment" class="textarea" , style="width:400px;height:60px;float:left"
-                              placeholder="最多只能输入150字哦..."></textarea>
+                              placeholder="最多只能输入150字哦(支持html语法)..." required></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn-default btn" , style="float:right">提交</button>

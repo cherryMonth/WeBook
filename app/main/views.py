@@ -5,7 +5,7 @@ from flask import Blueprint
 from forms import PostForm, FindFile, EditInfoForm
 from flask_login import login_required, current_user
 from app import db
-from models import Category, Favorite, User, Comment
+from models import Category, Favorite, User, Comment, Role
 import datetime
 import time
 from ..email import send_email
@@ -59,8 +59,44 @@ def dispaly(key):
         abort(404)
     comments = Comment.query.filter_by(post_id=key).all()
 
+    permission = current_user.role
+
+    html = u'''
+                    <li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown"> 处理 <b class="caret"></b></a>
+                                <ul class="dropdown-menu multi-column columns-3">
+                                <li>
+                                <div class="col-sm-4">
+                                    <ul class="multi-column-dropdown">
+                                    {}
+                                    </ul>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            </ul>
+                            </li>
+                            '''
+
     for _index in range(len(comments)):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
+
+        if current_user.is_anonymous:
+            comments[_index].html = ""
+
+        elif (permission >= 31 or current_user.id == p.user) and comments[_index].author_id == current_user.id:
+            string = u'''
+            <li><a onclick="edit_comment({})">修改</a></li>
+            <li><a href="/del_comment/{}">删除</a></li>
+            '''.format(comments[_index].id, comments[_index].id)
+            comments[_index].html = html.format(string)
+        elif permission >= 31 or current_user.id == p.user or comments[_index].author_id == current_user.id:
+            string = u'''
+                         <li><a href="/del_comment/{}">删除</a></li>
+                        '''.format(comments[_index].id)
+            comments[_index].html = html.format(string)
+
+        else:  # 普通用户无权限操作
+            comments[_index].html = ""
 
     return render_template("display.html",  post=p, is_collect=is_collect, comments=comments)
 
@@ -116,7 +152,6 @@ def del_file(key):
 
 '''
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
-
 '''
 
 
@@ -264,11 +299,11 @@ def edit_info():
         current_user.confirmed = False
         db.session.add(current_user)
         db.session.commit()
-        
+
         token = current_user.generate_confirmation_token()
         send_email([current_user.email], u'验证您的账号',
                    'auth/email/confirm', user=current_user, token=token)
-        
+
         flash(u"一封验证邮件发送到了你的邮箱,请您验收!", "success")
 
         logout()
@@ -280,7 +315,6 @@ def edit_info():
 @main.route("/add_comment/<key>", methods=["POST"])
 def add_comment(key):
     if request.method == "POST":
-
         if current_user.is_anonymous:
             flash(u"您尚未登录无法评论", "warning")
             return redirect("/display/" + key)
@@ -293,3 +327,64 @@ def add_comment(key):
         db.session.commit()
         flash(u"添加成功!", "success")
         return redirect("/display/" + key)
+
+
+@main.route("/edit_comment/<key>", methods=["POST"])
+@login_required
+def edit_comment(key):
+    if request.method == "POST":
+        info = request.form["comment"]
+        comment = Comment.query.filter_by(id=key).first()
+        if not comment:
+            abort(404)
+        comment.body = info
+        comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.session.add(comment)
+        db.session.commit()
+        flash(u"修改成功!", "success")
+        return redirect("/display/" + str(comment.post_id))
+
+
+@main.route("/del_comment/<key>", methods=['GET', 'POST'])
+@login_required
+def del_comment(key):
+    comment = Comment.query.filter_by(id=key).first()
+    if not comment:
+        abort(404)
+
+    category = Category.query.filter_by(id=comment.post_id).first()   # 文章
+
+    # 若是管理员，文章作者，评论作者都能删除评论
+
+    if current_user.role >= 31 or current_user.id == comment.author_id or current_user.id == category.user:
+        db.session.delete(comment)
+        db.session.commit()
+        flash(u"删除成功!", "success")
+        return redirect("/display/" + str(category.id))
+
+    else:
+        flash(u"您无权删除该条评论!", "warning")
+        return redirect("/display/" + str(category.id))
+
+
+# @main.route("/disable_comment/<key>", methods=['POST'])
+# @login_required
+# def disable_comment(key):
+#     comment = Comment.query.filter_by(id=key).first()
+#     if not comment:
+#         abort(404)
+#
+#     category = Category.query.filter_by(id=comment.post_id).first()  # 文章
+#
+#     # 管理员和作者可以屏蔽评论
+#
+#     if current_user.role >= 31 or current_user.id == category.user:
+#         comment.disabled = True
+#         db.session.add(comment)
+#         db.session.commit()
+#         flash(u"屏蔽成功!", "success")
+#         return redirect(url_for("/display/" + category.id))
+#     else:
+#         flash(u"您无权屏蔽该条评论!", "warning")
+#         return redirect(url_for("/display/" + category.id))
+

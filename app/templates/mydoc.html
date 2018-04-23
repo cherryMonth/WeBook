@@ -103,8 +103,6 @@
         var endRow = currentPage * pageSize;//结束显示的行   15
         endRow = (endRow > num) ? num : endRow;
         //遍历显示数据实现分页
-        console.log(startRow)
-        console.log(endRow)
         for (var i = 1; i <= num ; i++) {
             var tr = document.getElementById(i + "");
             if (i < startRow || i > endRow) {

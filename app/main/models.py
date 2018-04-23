@@ -68,7 +68,7 @@ class Comment(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)  # 哪篇文章
-    disabled = db.Column(db.Boolean, default=False)  # 是否隐藏
+    # disabled = db.Column(db.Boolean, default=False)  # 是否隐藏
 
 
 class Category(db.Model):
@@ -242,6 +242,8 @@ class User(db.Model, UserMixin):
 
 
 class AnonymousUser(AnonymousUserMixin):
+
+    role = 0
 
     @staticmethod
     def can():
