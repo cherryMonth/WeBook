@@ -82,7 +82,7 @@ class Category(db.Model):
     title = db.Column(db.String(30), nullable=False)
     content = db.Column(db.Text(100000), nullable=False)
     update_time = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), nullable=True)
-
+    collect_num = db.Column(db.Integer(), default=0, nullable=False)
     commented = db.relationship('Comment',  # 记录文章的评论数
                                backref=db.backref('post', lazy='joined'),
                                lazy='dynamic',
