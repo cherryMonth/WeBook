@@ -83,13 +83,13 @@ def dispaly(key):
         if current_user.is_anonymous:
             comments[_index].html = ""
 
-        elif (permission >= 31 or current_user.id == p.user) and comments[_index].author_id == current_user.id:
+        elif comments[_index].author_id == current_user.id:
             string = u'''
             <li><a onclick="edit_comment({})">修改</a></li>
             <li><a href="/del_comment/{}">删除</a></li>
             '''.format(comments[_index].id, comments[_index].id)
             comments[_index].html = html.format(string)
-        elif permission >= 31 or current_user.id == p.user or comments[_index].author_id == current_user.id:
+        elif permission >= 31 or current_user.id == p.user:
             string = u'''
                          <li><a href="/del_comment/{}">删除</a></li>
                         '''.format(comments[_index].id)
