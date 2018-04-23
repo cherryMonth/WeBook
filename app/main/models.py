@@ -242,8 +242,7 @@ class User(db.Model, UserMixin):
 
 
 class AnonymousUser(AnonymousUserMixin):
-
-    role = 0
+    role_id = 3
 
     @staticmethod
     def can():

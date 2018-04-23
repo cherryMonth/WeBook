@@ -59,7 +59,7 @@ def dispaly(key):
         abort(404)
     comments = Comment.query.filter_by(post_id=key).all()
 
-    permission = current_user.role
+    permission = Role.query.filter_by(id=current_user.role_id).first().permissions
 
     html = u'''
                     <li class="dropdown">
@@ -95,7 +95,7 @@ def dispaly(key):
                         '''.format(comments[_index].id)
             comments[_index].html = html.format(string)
 
-        else:  # 普通用户无权限操作
+        else:  # 普通用户无权限操作comments
             comments[_index].html = ""
 
     return render_template("display.html",  post=p, is_collect=is_collect, comments=comments)
