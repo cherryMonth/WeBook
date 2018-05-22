@@ -52,6 +52,23 @@ class Role(db.Model):  # 角色
         return '<Role %r>' % self.name
 
 
+class Information(db.Model):
+
+    __tablename__ = 'information'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    launch_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    receive_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    time = db.Column(db.DateTime, nullable=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+    confirm = db.Column(db.Boolean, default=False)
+
+    info = db.Column(db.String(100), nullable=False)
+
+
 class Favorite(db.Model):
     __tablename__ = 'favorites'
 
@@ -124,25 +141,31 @@ class User(db.Model, UserMixin):
 
     confirmed = db.Column(db.Boolean, default=False)
 
+    image_name = db.Column(db.String(20), unique=True)
+
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     username = db.Column(db.String(20), nullable=False, unique=True)
 
     password_hash = db.Column(db.String(128), nullable=False)
 
-    about_me = db.Column(db.Text())
+    about_me = db.Column(db.String(100), default="")
 
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
 
     avatar_hash = db.Column(db.String(32))
 
-    followed = db.relationship('Follow',
+    follow_num = db.Column(db.Integer, default=0)  # 总粉丝数
+
+    collect_num = db.Column(db.Integer, default=0)  # 总收藏数
+
+    followed = db.relationship('Follow',  # 用户关注的人
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
                                lazy='dynamic',
                                cascade='all, delete-orphan')
 
-    followers = db.relationship('Follow',
+    followers = db.relationship('Follow',  # 关注用户的人
                                 foreign_keys=[Follow.followed_id],
                                 backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',
@@ -152,6 +175,16 @@ class User(db.Model, UserMixin):
                                foreign_keys=[Favorite.favorite_id],
                                backref=db.backref('favorite', lazy='joined'),
                                lazy='dynamic',
+                               cascade='all, delete-orphan')
+
+    launched = db.relationship('Information',  # 用户关注的人
+                               foreign_keys=[Information.launch_id],
+                               backref=db.backref('launched', lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all, delete-orphan')
+
+    received = db.relationship('Information', foreign_keys=[Information.receive_id],
+                               backref=db.backref('received', lazy='joined'), lazy='dynamic',
                                cascade='all, delete-orphan')
 
     def __repr__(self):
@@ -172,7 +205,7 @@ class User(db.Model, UserMixin):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
-        self.followed.append(Follow(followed=self))
+        # self.followed.append(Follow(followed=self))
 
     @property
     def password(self):  # 密码只能被设置而不能读取
@@ -215,6 +248,8 @@ class User(db.Model, UserMixin):
         if not self.is_following(user):
             f = Follow(follower=self, followed=user)
             from app import db
+            user.follow_num += 1
+            db.session.add(user)
             db.session.add(f)
             db.session.commit()
 
@@ -222,6 +257,8 @@ class User(db.Model, UserMixin):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f:
             from app import db
+            user.follow_num -= 1
+            db.session.add(user)
             db.session.delete(f)
             db.session.commit()
 

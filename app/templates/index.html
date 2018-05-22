@@ -1,240 +1,260 @@
 {% extends "base.html" %}
 
 {% block head %}
-    {%block title %}We Book {% endblock %}
+{%block title %}We Book {% endblock %}
 
-    {% block metas %}
-	<meta name="description" content="La casa free real state fully responsive html5/css3 home page website template"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	{% endblock metas %}
+{% block metas %}
+<meta name="description" content="La casa free real state fully responsive html5/css3 home page website template"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+{% endblock metas %}
 
-    {% block styles %}
-    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
-		function hideURLbar(){ window.scrollTo(0,1); } </script>
-    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-    <link rel="stylesheet" type="text/css" href="/static/css/zoomslider.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-	<link rel="stylesheet" type="text/css" href="/static/css/style-1.css" />
-	<link rel="stylesheet" href="/static/css/responsive.css" media="screen">
-	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css.map">
-    <script type="text/javascript" src="/static/js/modernizr-2.6.2.min.js"></script>
-    {% endblock styles %}
-	{% endblock head %}
+{% block styles %}
+<script type="application/x-javascript"> addEventListener("load", function () {
+    setTimeout(hideURLbar, 0);
+}, false);
+
+function hideURLbar() {
+    window.scrollTo(0, 1);
+} </script>
+<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" media="all"/>
+<link rel="stylesheet" type="text/css" href="/static/css/zoomslider.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/style-1.css"/>
+<link rel="stylesheet" type="text/css" href="/static/css/responsive.css" media="screen">
+<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.css.map">
+<script type="text/javascript" src="/static/js/modernizr-2.6.2.min.js"></script>
+<style>
+     .line-limit-length {
+        width: 34em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+{% endblock styles %}
+{% endblock head %}
 
 {% block body %}
 
 {% block navbar %}
-			<div class="demo-inner-content">
-			   <div class="header-w3-agileits">
-			     <div class="inner-header-agile">
+<div class="demo-inner-content">
+    <div class="header-w3-agileits">
+        <div class="inner-header-agile">
             <nav class="navbar navbar-default">
-					<div class="navbar-header">
-						<h1><a  href="{{url_for('main.index')}}"><span>W</span>e<span>B</span>ook</a></h1>
-					</div>
-					<!-- navbar-header -->
-					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-							<ul class="nav navbar-nav">
-								<li><a href="{{url_for('main.index')}}">首页</a></li>
-                                <li><a href="{{url_for('main.find_file')}}">发现</a></li>
-                                {% if not current_user.is_anonymous %}
-                                <li style="margin-left:25%"><a href="{{url_for('main.edit')}}">写文章</a></li>
-							    <li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown"> {{current_user.username}}的个人助手 <b class="caret"></b></a>
-								<ul class="dropdown-menu multi-column columns-3">
-									<li>
-									<div class="col-sm-4">
-										<ul class="multi-column-dropdown">
-											<li><a href="{{url_for('main.my_doc')}}">我的文章</a></li>
-											<li><a href="{{url_for('main.show_collect')}}">收藏的文章</a></li>
-											<li><a href="{{url_for('main.edit_info')}}">设置</a></li>
-										</ul>
-									</div>
-									<div class="clearfix"></div>
-									</li>
-								</ul>
-							</li>
-                                <li><a href="{{url_for('auth.logout')}}">注销</a></li>
-                                {% else %}
-                                <li style="margin-left:60%"><a href="{{url_for('main.edit')}}">写文章</a></li>
-                                <li><a href="{{url_for('auth.login')}}">登录</a></li>
-							    <li><a href="{{url_for('auth.register')}}" style="border: 1px solid rgba(236,97,73,.7);border-radius: 20px;width: 80px;text-align:center">注册</a></li>
-                                {% endif %}
+                <div class="navbar-header">
+                    <h1><a href="{{url_for('main.index')}}"><span>W</span>e<span>B</span>ook</a></h1>
+                </div>
+                <!-- navbar-header -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{url_for('main.index')}}">首页</a></li>
+                        <li><a href="{{url_for('main.find_file')}}">发现</a></li>
+                        <li><a href="{{url_for('user.find_user')}}">关注</a></li>
+                        {% if not current_user.is_anonymous %}
+                        <li style="margin-left:25%"><a href="{{url_for('user.information')}}">消息<span class="badge pull-right">{% if g.message_nums != None %}{{ g.message_nums }}{% endif %}</span></a></li>
+                        <li><a href="{{url_for('main.edit')}}">写文章</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="/show_image/{{current_user.id}}" style="width: 45px;height: 45px;">
+                                <b class="caret"></b></a>
+                            <ul class="dropdown-menu multi-column columns-3">
+                                <li>
+                                    <div class="col-sm-4">
+                                        <ul class="multi-column-dropdown">
+                                            <li><a href="/my_doc/{{current_user.id}}">我的文章</a></li>
+                                            <li><a href="{{url_for('main.show_collect')}}">收藏的文章</a></li>
+                                            <li><a href="{{url_for('main.edit_basic')}}">设置</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a href="{{url_for('auth.logout')}}">注销</a></li>
+                        {% else %}
+                        <li style="margin-left:60%"><a href="{{url_for('main.edit')}}">写文章</a></li>
+                        <li><a href="{{url_for('auth.login')}}">登录</a></li>
+                        <li><a href="{{url_for('auth.register')}}"
+                               style="border: 1px solid rgba(236,97,73,.7);border-radius: 20px;width: 80px;text-align:center">注册</a>
+                        </li>
+                        {% endif %}
 
-						</ul>
-						<hr style="width:100%;color:#000">
-					</div>
-				</nav>
+                    </ul>
+                    <hr style="width:100%;color:#000">
+                </div>
+            </nav>
         </div>
-			</div>
-			   </div>
-				{% endblock navbar %}
+    </div>
+</div>
+{% endblock navbar %}
 
 {% block message %}
-                <script>
-					function close_flash(){
-					var btn = document.getElementById('flash')
-                    btn.style.display = 'none'
-          			}
-				</script>
-                <div class="container" id="flash" style="text-align:center;">
-                    <div class="row clearfix">
-                        {% for message in get_flashed_messages(with_categories=True) %}
-						{% if message[1] != 'Please log in to access this page.' %}
-                            <div class="alert alert-{{ message[0] }}">
-                                <button type="button" class="close" data-dismiss="alert" onclick="close_flash()">&times;</button>
-								{{ message[1] }}
-                            </div>
-						{% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+<script>
+    function close_flash() {
+        var btn = document.getElementById('flash')
+        btn.style.display = 'none'
+    }
+</script>
+<div class="container" id="flash" style="text-align:center;">
+    <div class="row clearfix">
+        {% for message in get_flashed_messages(with_categories=True) %}
+        {% if message[1] != 'Please log in to access this page.' %}
+        <div class="alert alert-{{ message[0] }}">
+            <button type="button" class="close" data-dismiss="alert" onclick="close_flash()">&times;</button>
+            {{ message[1] }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
 {% endblock message %}
 
-	<div class="container" style="width:92%;margin-top:4%"> <!-- 如果需要全屏则需要把class=container去掉 -->
-	<div id="demo-1" data-zs-src='["/static/images/2.jpg", "/static/images/1.jpg", "/static/images/3.jpg","/static/images/4.jpg"]' data-zs-overlay="dots">
-		<div class="demo-inner-content">
-			   <div class="header-w3-agileits" id="home">
-			     <div class="inner-header-agile">
-			<div class="container text-center">
-            <div class="content">
-                <div class="header-text btn">
-                    <h1><span id="head-title" style="color:white"></span></h1>
+<div class="container" style="width:92%;margin-top:4%"> <!-- 如果需要全屏则需要把class=container去掉 -->
+    <div id="demo-1"
+         data-zs-src='["/static/images/2.jpg", "/static/images/1.jpg", "/static/images/3.jpg","/static/images/4.jpg"]'
+         data-zs-overlay="dots">
+        <div class="demo-inner-content">
+            <div class="header-w3-agileits" id="home">
+                <div class="inner-header-agile">
+                    <div class="container text-center">
+                        <div class="content">
+                            <div class="header-text btn">
+                                <h1><span id="head-title" style="color:white"></span></h1>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-			</div>
-			   </div>
-		</div>
     </div>
 </div>
 {% block content %}
-      <div id="services">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="section-title">
-                        <h2>We Book</h2>
-						<hr>
-                    </div>
-                    <p>Nice meet to you.</p>
+<div id="services">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="section-title">
+                    <h2>We Book</h2>
+                    <hr>
+                </div>
+                <p>Nice meet to you.</p>
+            </div>
+        </div>
+
+        <div class="space"></div>
+        <div class="row">
+            <div class="col-md-4 col-sm-4">
+                <div class="service">
+                    <span class="fa fa-book fa-3x"></span>
+                    <h4>Past</h4>
+                    <p>轻轻的风，吹开你紧琐的眉头，让所有的愁向后飞去。请不要回头去追那些不属于你的忧愁，你应该向前奔跑，因为快乐在前方! </p>
                 </div>
             </div>
 
-            <div class="space"></div>
-            <div class="row">
-                <div class="col-md-4 col-sm-4">
-                    <div class="service">
-                        <span class="fa fa-book fa-3x"></span>
-                        <h4>Past</h4>
-                        <p>轻轻的风，吹开你紧琐的眉头，让所有的愁向后飞去。请不要回头去追那些不属于你的忧愁，你应该向前奔跑，因为快乐在前方! </p>
-                    </div>
+            <div class="col-md-4 col-sm-4">
+                <div class="service">
+                    <span class="fa fa-bicycle fa-3x"></span>
+                    <h4>Now</h4>
+                    <p>内心越强大，笑的越漂亮。</p>
                 </div>
+            </div>
 
-                <div class="col-md-4 col-sm-4">
-                    <div class="service">
-                        <span class="fa fa-bicycle fa-3x"></span>
-                        <h4>Now</h4>
-                        <p>内心越强大，笑的越漂亮。</p>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-sm-4">
-                    <div class="service">
-                        <span class="fa fa-plug fa-3x"></span>
-                        <h4>Future</h4>
-                        <p> 在许多的犹豫中，你做对了一件事情，那就是勇敢地上路，不要徘徊在许多假设性的框架里。那是人生的一个大关卡，你做了一个正确的选择，那就是：尝试、再尝试，不害怕所有的新鲜事。</p>
-                    </div>
+            <div class="col-md-4 col-sm-4">
+                <div class="service">
+                    <span class="fa fa-plug fa-3x"></span>
+                    <h4>Future</h4>
+                    <p> 在许多的犹豫中，你做对了一件事情，那就是勇敢地上路，不要徘徊在许多假设性的框架里。那是人生的一个大关卡，你做了一个正确的选择，那就是：尝试、再尝试，不害怕所有的新鲜事。</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 <div id="cta">
-        <div class="container text-center">
-            <a href="#" class="btn go-to-btn">Check our shop</a>
-        </div>
+    <div class="container text-center">
+        <a href="#" class="btn go-to-btn">Check our shop</a>
     </div>
+</div>
 
 <div id="about-us">
-            <div class="row text-center">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="section-title">
-                        <h2>About Us</h2>
-						<hr>
-                    </div>
-                    <p>有时候，不小心知道了一些事，才发现自己所在乎的事是那么可笑，所以啊，对自己好点，反正已经这么辛苦了。</p>
+    <div class="row text-center">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="section-title">
+                <h2>About Us</h2>
+                <hr>
+            </div>
+            <p>有时候，不小心知道了一些事，才发现自己所在乎的事是那么可笑，所以啊，对自己好点，反正已经这么辛苦了。</p>
 
-				</div>
-<div class="col-md-10 col-sm-10" style="margin-left:35%;margin-top:50px;">
-                    <div class="text-center">
-                        <div class="col-md-4 col-sm-4">
-                            <div class="team">
-                                <img src="/static/images/me.jpg" class="img-responsive img-circle" alt="...">
-                                <br>
-                                <h4>就是SSS...J啊</h4>
-                                <p class="small">Web Designer</p>
-						<hr>
-                            </div>
-                        </div>
-
+        </div>
+        <div class="col-md-10 col-sm-10" style="margin-left:35%;margin-top:50px;">
+            <div class="text-center">
+                <div class="col-md-4 col-sm-4">
+                    <div class="team">
+                        <img src="/static/images/me.jpg" class="img-responsive img-circle" alt="...">
+                        <br>
+                        <h4>就是SSS...J啊</h4>
+                        <p class="small">Web Designer</p>
+                        <hr>
                     </div>
                 </div>
-            </div>
 
+            </div>
+        </div>
     </div>
+
+</div>
 
 {% endblock content %}
 
 {% block content_script %}
-    <script src="/static/js/jquery-1.11.1.min.js"></script>
-			<script>
-				$(document).ready(function(){
-					$(".dropdown").hover(
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
-							$(this).toggleClass('open');
-						},
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
-							$(this).toggleClass('open');
-						}
-					);
-				});
-			</script>
-    <script type="text/javascript" src="/static/js/jquery.zoomslider.min.js"></script>
-	<script type="text/javascript" src="/static/js/typed.js"></script>
-	<script>
-      $(function(){
-          $("#head-title").typed({
+<script src="/static/js/jquery-1.11.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".dropdown").hover(
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $(this).toggleClass('open');
+            },
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $(this).toggleClass('open');
+            }
+        );
+    });
+</script>
+<script type="text/javascript" src="/static/js/jquery.zoomslider.min.js"></script>
+<script type="text/javascript" src="/static/js/typed.js"></script>
+<script>
+    $(function () {
+        $("#head-title").typed({
             strings: ["We^1000", "Book^1000"],
             typeSpeed: 100,
             loop: true,
             startDelay: 100
-          });
-      });
-    </script>
+        });
+    });
+</script>
 {% endblock content_script %}
 {% block footer %}
 
 <footer style="margin-top:35%">
-		<div class="wrapper footer">
-			<ul>
-				<li class="links">
-					<ul>
-						<li><a href="/">目前是正式1.0版本哦. O(∩_∩)O</a></li>
-					</ul>
-				</li>
-				<li class="about" style="float:right">
-					<ul>
-						<li><a href="http://facebook.com/pixelhint" class="facebook" target="_blank"></a></li>
-						<li><a href="http://twitter.com/pixelhint" class="twitter" target="_blank"></a></li>
-						<li><a href="http://plus.google.com/+Pixelhint" class="google" target="_blank"></a></li>
-						<li><a href="#" class="skype"></a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-	</footer>
+    <div class="wrapper footer">
+        <ul>
+            <li class="links">
+                <ul>
+                    <li><a href="/">目前是正式1.0版本哦. O(∩_∩)O</a></li>
+                </ul>
+            </li>
+            <li class="about" style="float:right">
+                <ul>
+                    <li><a href="http://facebook.com" class="facebook" target="_blank"></a></li>
+                    <li><a href="http://twitter.com" class="twitter" target="_blank"></a></li>
+                    <li><a href="http://plus.google.com" class="google" target="_blank"></a></li>
+                    <li><a href="#" class="skype"></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</footer>
 
 {% endblock footer %}
 {% endblock body %}

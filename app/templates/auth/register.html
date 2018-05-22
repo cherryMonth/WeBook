@@ -5,53 +5,53 @@
 {% endblock metas %}
 
 {% block script %}
-	<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
-	<script src="{{ url_for('static',filename='js/jquery.validate.min.js') }}"></script>
-	<script src="{{ url_for('static',filename='js/messages_zh.js') }}"></script>
-	<script>
-		$().ready(function() {
-    $("#form").validate();
-		});
-	</script>
+<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/messages_zh.js') }}"></script>
+<script>
+    $().ready(function () {
+        $("#form").validate();
+    });
+</script>
 {% endblock script %}
 
 
 {% block styles %}
-	<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-	<link rel="stylesheet" type="text/css" href="/static/css/style-1.css" />
-	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css.map">
-	<style>
-	.main {
-    width: 500px;
-    height: 600px;
-    margin: 60px auto 0;
-    padding: 50px 30px;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 0 8px rgba(0,0,0,.1);
-    vertical-align: middle;
-    display: inline-block;
-	}
+<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" media="all"/>
+<link rel="stylesheet" type="text/css" href="/static/css/style-1.css"/>
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css.map">
+<style>
+    .main {
+        width: 500px;
+        height: 750px;
+        margin: 60px auto 60px;
+        padding: 50px 30px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+        vertical-align: middle;
+        display: inline-block;
+    }
 
-	body{
-	background: #f1f1f1;
-	}
+    body {
+        background: #f1f1f1;
+    }
 
-	.sign-in-button {
-    width: 100%;
-    padding: 9px 18px;
-    font-size: 18px;
-    border: none;
-    border-radius: 25px;
-    color: #fff;
-    background: #3db922;
-    cursor: pointer;
-    outline: none;
-    display: block;
-    clear: both;
-}
+    .sign-in-button {
+        width: 100%;
+        padding: 9px 18px;
+        font-size: 18px;
+        border: none;
+        border-radius: 25px;
+        color: #fff;
+        background: #3db922;
+        cursor: pointer;
+        outline: none;
+        display: block;
+        clear: both;
+    }
 
-	</style>
+</style>
 {% endblock %}
 
 {% block title %} 注册用户 {% endblock title %}
@@ -59,59 +59,112 @@
 {% block body %}
 
 {% block content %}
-			<div class="logo">
-				<a href="/"><img style="width:20%;height:20%" src="/static/img/logo.png" alt="Logo"></a>
-			</div>
+<div class="logo">
+    <a href="/"><img style="width:20%;height:20%" src="/static/img/logo.png" alt="Logo"></a>
+</div>
 
-			{% block message %}
-				<script>
-					function close_flash(){
-					var btn = document.getElementById('flash')
-                    btn.style.display = 'none'
-          			}
-				</script>
-                <div class="container" id="flash" style="text-align:center;">
-                    <div class="row clearfix">
-                        {% for message in get_flashed_messages(with_categories=True) %}
-						{% if message[1] != 'Please log in to access this page.' %}
-                            <div class="alert alert-{{ message[0] }}">
-                                <button type="button" class="close" data-dismiss="alert" onclick="close_flash()">&times;</button>
-								{{ message[1] }}
-                            </div>
-						{% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-			{% endblock message %}
+{% block message %}
+<script>
+    function close_flash() {
+        var btn = document.getElementById('flash')
+        btn.style.display = 'none'
+    }
 
-			<div class="main" style="margin-left:37%">
-				<div style="font-size:30px;">
-					<a href="{{url_for('auth.login')}}" style="margin-right:40%;margin-left:10%;color:#969696">登录</a>
-					<a href="{{url_for('auth.register')}}" style="color:#ea6f5a;padding: 10px;border-bottom: 2px solid #ea6f5a;">注册</a>
-				</div>
-					<div class="col-sm-5">
-							<form id="form" method="post" class="form">
-								<div class="form-group" style="color:red;width:370px;margin-top:10%">
-		        				 <label class="control-label" for="email" style="color:black">邮箱</label>
-									<input class="form-control" id="email" name="email" required type="email"  minlength="2">
+    function checkinfo() {
+        window.onbeforeunload = null;
+        var obj = document.getElementById("filename");
+        var len = obj.files.length;
+        var text = "";
+
+        Array.prototype.contains = function (obj) {
+            var i = this.length;
+            while (i--) {
+                if (this[i] === obj) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        for (var i = 0; i < len; i++) {
+            size = obj.files[i].size / 1024 / 1024;
+            size = size.toFixed(2);
+
+            var extend = obj.files[i].name.split('.').pop().toLowerCase();
+
+            if (!['png', 'jpg', 'jpeg', "bmp"].contains(extend)) {
+                text += "文件:" + obj.files[i].name + "上传头像失败! (图片允许格式为：png, jpg, jpeg, bmp)。\n"
+            }
+
+            if (size >= 4) {
+                text += "文件:" + obj.files[i].name + " ,大小:" + size + "M, 系统最大支持4M。\n";
+            }
+        }
+        if (text.length === 0)
+            return true;
+        else {
+            alert(text);
+            return false;
+        }
+    }
+</script>
+<div class="container" id="flash" style="text-align:center;">
+    <div class="row clearfix">
+        {% for message in get_flashed_messages(with_categories=True) %}
+        {% if message[1] != 'Please log in to access this page.' %}
+        <div class="alert alert-{{ message[0] }}">
+            <button type="button" class="close" data-dismiss="alert" onclick="close_flash()">&times;</button>
+            {{ message[1] }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock message %}
+
+<div class="main" style="margin-left:37%;">
+    <div style="font-size:30px;">
+        <a href="{{url_for('auth.login')}}" style="margin-right:40%;margin-left:10%;color:#969696">登录</a>
+        <a href="{{url_for('auth.register')}}"
+           style="color:#ea6f5a;padding: 10px;border-bottom: 2px solid #ea6f5a;">注册</a>
+    </div>
+    <div class="col-sm-5">
+        <form id="form" method="post" class="form" enctype=multipart/form-data onsubmit="return checkinfo()">
+            <div class="form-group" style="color:red;width:370px;margin-top:10%">
+                <label class="control-label" for="email" style="color:black">邮箱</label>
+                <input class="form-control" id="email" name="email" required type="email" minlength="2">
+            </div>
+            <div class="form-group" style="color:red;width:370px;margin-top:5%">
+                <label class="control-label" for="username" style="color:black">用户名</label>
+                <input class="form-control" id="username" name="username" required type="text" minlength="3"
+                       maxlength="15">
+            </div>
+             <div class="form-group" style="color:red;width:370px;margin-top:5%">
+                <label class="control-label" for="filename" style="color:black">用户头像</label>
+               <input id="filename" name="filename" required="required" type="file" aria-required="true" aria-invalid="false" >
+            </div>
+
+            <div class="form-group" style="color:red;width:370px;margin-top:25%">
+									<label class="control-label" for="about_me" style="color:black">个人简介</label>
+                                    <textarea class="form-control"  style="overflow-y:scroll;height: 100px;" id="about_me" name="about_me"  placeholder="仅限于100字以内..."
+                                              minlength="0" maxlength="100">{{current_user.about_me}}</textarea>
 								</div>
-								<div class="form-group" style="color:red;width:370px;margin-top:5%">
-									<label class="control-label" for="username" style="color:black">用户名</label>
-									<input class="form-control"  id="username" name="username" required type="text"  minlength="3" maxlength="15" >
-								</div>
-								<div class="form-group" style="color:red;width:370px;margin-top:5%">
-									<label class="control-label" for="password" style="color:black">密码</label>
-									<input class="form-control"  id="password" name="password" required type="password" minlength="6" maxlength="10" >
-								</div>
-								<div class="form-group" style="color:red;width:370px;margin-top:5%">
-									<label class="control-label" for="password2" style="color:black">确认密码</label>
-									<input class="form-control"  id="password2" name="password2" required type="password" minlength="6" equalTo="#password"  maxlength="10">
-								</div>
-								<div class="form-group" style="margin-top:20%">
-									{{ form.submit(class="sign-in-button", style="margin-top:20%;width:400px;height:60px;") }}
-								</div>
-							</form>
-						</div>
-					</div>
+
+            <div class="form-group" style="color:red;width:370px;margin-top:5%">
+                <label class="control-label" for="password" style="color:black">密码</label>
+                <input class="form-control" id="password" name="password" required type="password" minlength="6"
+                       maxlength="10">
+            </div>
+            <div class="form-group" style="color:red;width:370px;margin-top:5%">
+                <label class="control-label" for="password2" style="color:black">确认密码</label>
+                <input class="form-control" id="password2" name="password2" required type="password" minlength="6"
+                       equalTo="#password" maxlength="10">
+            </div>
+            <div class="form-group" style="margin-top:20%">
+                {{ form.submit(class="sign-in-button", style="margin-top:20%;width:400px;height:60px;") }}
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock content %}
 {% endblock body %}

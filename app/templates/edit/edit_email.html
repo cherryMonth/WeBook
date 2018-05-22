@@ -1,0 +1,33 @@
+{% extends "edit/edit_basic.html" %}
+
+{% block content %}
+    <div class="main" style="margin-left:15%;width:300px; overflow-y:scroll">
+                <ul class="nav">
+                    <li><a href="{{url_for('main.edit_basic')}}">修改基础信息</a></li>
+                    <li><a href="{{url_for('main.edit_password')}}">修改密码</a></li>
+                    <li><a  style="color: #c59a6d" href="{{url_for('main.edit_email')}}">解绑邮箱</a></li>
+					<li><a href="{{url_for('user.my_follow')}}">我关注的人</a></li>
+                    <li><a href="{{url_for('user.follow_me')}}">关注我的人</a></li>
+                </ul>
+            </div>
+			<div class="main" style="margin-left:10%">
+				<div style="font-size:30px;">
+					<a style="color:#ea6f5a;padding: 10px;border-bottom: 2px solid #ea6f5a;">解绑邮箱</a>
+				</div>
+					<div class="col-sm-5">
+							<form id="form" method="post" class="form">
+                                <div class="form-group" style="color:red;width:370px;margin-top:25%">
+									<label class="control-label" for="old" style="color:black">您当前的邮箱</label>
+									<input class="form-control"  id="old" name="email" value="{{current_user.email}}" readonly="true">
+								</div>
+								<div class="form-group" style="color:red;width:370px;margin-top:25%">
+									<label class="control-label" for="email" style="color:black">新的邮箱</label>
+									<input class="form-control"  id="email" name="email" required type="email" minlength="1" maxlength="25" >
+								</div>
+								<div class="form-group" style="margin-top:20%">
+									{{ form.submit(class="sign-in-button", style="margin-top:20%;width:400px;height:60px;") }}
+								</div>
+							</form>
+						</div>
+					</div>
+{% endblock content %}

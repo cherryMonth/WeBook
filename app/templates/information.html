@@ -1,0 +1,100 @@
+{% extends "index.html" %}
+
+{% block title %}
+我的消息
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+
+{% block navbar %}
+{{super()}}
+{% endblock navbar %}
+{% block message %}
+<div class="container" id="flash" style="text-align:center;margin-top:1%">
+    <div class="row clearfix">
+        {% for message in get_flashed_messages(with_categories=True) %}
+        {% if message[1] != 'Please log in to access this page.' %}
+        <div class="alert alert-{{ message[0] }}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message[1] }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock message %}
+
+{% block content %}
+<div class="container" style="margin-top:2%;">
+    {% if length > 0 %}
+    <h1>当前共有{{length}}个与您有关的信息!</h1>
+    <table class='table table-hover' id="my_table">
+        <tr>
+            <th>发送方</th>
+            <th>内容</th>
+            <th>发送时间</th>
+            <th>信息状态</th>
+            <th>处理方式</th>
+        </tr>
+        {% for info in info_list %}
+        <tr id="{{info_list.index(info) + 1}}">
+            <td style="word-wrap:break-word;">
+                    <img src="/show_image/{{info.launch_id}}" style="height: 30px;width: 30px">&nbsp;{{info.author.username}}
+            </td>
+            <td style="color: black;word-wrap:break-word;">
+                {{ info.info }}
+            </td>
+            <td style="color: black;word-wrap:break-word;">
+                {{ info.time }}
+            </td>
+            <td style="color: black;word-wrap:break-word;">
+                {% if info.confirm == True %}
+                已查看
+                {% else %}
+                 未查看
+                {% endif %}
+            </td>
+            <td style="word-wrap:break-word;">
+                {% if info.confirm != True %}
+                <a href='/info_confirm/{{info.id}}'>标记为已查看</a>
+                {% endif %}
+                <a href='/del_info/{{info.id}}' style="margin-left: 5%">删除</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div style="margin-left:40%;margin-top:5%" id="barcon" name="barcon"></div>
+    {% else %}
+    <h3>好遗憾啊,当前还没有与您有关的消息。</h3>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block footer %}
+{{super()}}
+{% endblock footer %}
+
+{% block content_script %}
+<script>
+    $(document).ready(function () {
+        $(".dropdown").hover(
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $(this).toggleClass('open');
+            },
+            function () {
+                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $(this).toggleClass('open');
+            }
+        );
+    });
+</script>
+{% endblock content_script %}
+
+{% endblock %}

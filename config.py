@@ -2,6 +2,7 @@
 
 import os
 import ConfigParser
+import sys
 
 cf = ConfigParser.ConfigParser()
 try:
@@ -24,9 +25,15 @@ class ServerConfig(object):
     MAIL_PASSWORD = "sj123456" # os.environ.get("EMAIL_PASSWORD")
     FLASK_MAIL_SENDER = os.environ.get("EMAIL")
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    path = sys.path[0]
+    if os.path.isdir(path):
+        UPLOAD_FOLDER = path + u"\images\\"
+    else:
+        UPLOAD_FOLDER = os.path.dirname(path) + u"\images\\"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
-                              os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
+    SQLALCHEMY_DATABASE_URI = "mysql://root:sj@123456@120.78.144.47:3306/markdown"
+    # SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
+    #                           os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
 
     @staticmethod
     def init_app(app):

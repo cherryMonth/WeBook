@@ -1,10 +1,12 @@
 # coding=utf-8
 
 from flask import render_template, redirect, flash, url_for, request
-from flask import Blueprint
+from flask import Blueprint, current_app, session
+from werkzeug.utils import secure_filename
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from ..email import send_email
+import os
 from forms import LoginForm, RegisterForm, ForgetForm
 from models import User
 
@@ -23,6 +25,7 @@ def before_request():
         current_user.ping()
         if not current_user.confirmed \
                 and request.endpoint \
+                and request.endpoint not in ['static', 'main.show_image'] \
                 and request.endpoint[:5] != 'auth.':
             return redirect(url_for('auth.unconfirmed'))
 
@@ -62,8 +65,31 @@ def register():
             flash(form.username.data + u'已经被注册,请选择其他用户名!', "warning")
             return redirect(url_for("auth.register"))
 
+        _file = request.files['filename']
+        _type = _file.filename.split(".")[-1].lower()
+
+        if not _type or _type not in ['jpeg', 'jpg', 'bmp', "png"]:
+            flash(u"图片格式错误，当前只支持'jpeg', 'jpg', 'bmp', 'png'!", "warning")
+            return redirect(url_for("main.edit_basic"))
+
+        dirname = current_app.config['UPLOAD_FOLDER']  # 截图存放地点
+
         user = User(email=form.email.data, username=form.username.data,
-                    password=form.password.data)
+                    password=form.password.data, about_me=form.about_me.data)
+        db.session.add(user)
+        db.session.commit()
+
+        user_id = User.query.filter_by(username=user.username).first().id
+        filename = secure_filename(str(user_id) + "." + _type)
+        if not os.path.exists(dirname):
+            try:
+                os.makedirs(dirname)
+                _file.save(os.path.join(dirname, filename))
+            except Exception as e:
+                print e
+        else:
+            _file.save(os.path.join(dirname, filename))
+        user.image_name = filename
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
@@ -99,11 +125,13 @@ def login_by_mail(token):
         for user in user_list:
             if user.confirm(token):
                 login_user(user)
-                return redirect(url_for("main.edit_info"))
+                session['check'] = "true"
+                return redirect(url_for("main.edit_password"))
         flash(u'验证链接无效或已过期。', "warning")
         return redirect(url_for('auth.login'))
     elif current_user.confirm(token):
-        return redirect(url_for('main.edit_info'))
+        session['check'] = "true"
+        return redirect(url_for('main.edit_password'))
     else:
         flash(u'验证链接无效或已过期。', "warning")
         return redirect(url_for('auth.login'))
@@ -136,6 +164,7 @@ def forget():
         token = user.generate_confirmation_token()
         send_email([user.email], u'验证您的账号',
                    'auth/email/forget', user=user, token=token)
+        print token
         flash(u"一封验证邮件发送到了你的邮箱,请您验收!", "success")
         return redirect(url_for("auth.login"))
     return render_template("auth/check_info.html", form=form)
