@@ -259,7 +259,7 @@ def downloader(key):
     while True:
         if os.path.exists(pdf_name):
             return send_from_directory(file_dir, pdf, as_attachment=True)
-        elif count == 20:
+        elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
             return redirect(url_for("main.my_doc"))
         else:
@@ -272,8 +272,12 @@ def find_file():
     form = FindFile()
     hot_doc_list = Category.query.from_statement(
         "SELECT * FROM markdown.category ORDER BY collect_num DESC LIMIT 5 ;").all()
+    for doc in hot_doc_list:
+        doc.username = User.query.filter_by(id=doc.user).first().username
     if form.validate_on_submit():
         doc_list = Category.query.whoosh_search(form.input.data).all()
+        for doc in doc_list:
+            doc.username = User.query.filter_by(id=doc.user).first().username
         length = len(doc_list)
         if not doc_list:
             flash(u"没有找到符合要求的文章!", "warning")
