@@ -31,9 +31,8 @@ class ServerConfig(object):
     else:
         UPLOAD_FOLDER = os.path.dirname(path) + u"\images\\"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = "mysql://root:sj@123456@120.78.144.47:3306/markdown"
-    # SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
-    #                           os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
+    SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
+                              os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
 
     @staticmethod
     def init_app(app):
