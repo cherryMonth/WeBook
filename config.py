@@ -2,6 +2,7 @@
 
 import os
 import ConfigParser
+import sys
 
 cf = ConfigParser.ConfigParser()
 try:
@@ -17,16 +18,21 @@ except Exception as e:
 
 class ServerConfig(object):
     SECRET_KEY = "hard to guess string"
-    MAIL_SERVER = "smtp.gmail.com"
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = "" # os.environ.get("ENAIL")
-    MAIL_PASSWORD = "sj123456" # os.environ.get("EMAIL_PASSWORD")
+    MAIL_SERVER = "smtp.qq.com"
+    MAIL_PORT = 465
+    MAIL_USERNAME = os.environ.get("EMAIL")
+    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+    MAIL_USE_SSL=True
     FLASK_MAIL_SENDER = os.environ.get("EMAIL")
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    path = sys.path[0]
+    if os.path.isdir(path):
+        UPLOAD_FOLDER = path + u"/images/"
+    else:
+        UPLOAD_FOLDER = os.path.dirname(path) + u"/images/"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
-                              os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
+                               os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
 
     @staticmethod
     def init_app(app):

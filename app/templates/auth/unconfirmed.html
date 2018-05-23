@@ -6,7 +6,7 @@
 
 {% block styles %}
 {{super()}}
-    <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
     <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
 {% endblock %}
@@ -60,20 +60,7 @@
 {% endblock footer %}
 
 {% block content_script %}
-             <script>
-				$(document).ready(function(){
-					$(".dropdown").hover(
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
-							$(this).toggleClass('open');
-						},
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
-							$(this).toggleClass('open');
-						}
-					);
-				});
-			</script>
+
 {% endblock content_script %}
 
 {% endblock %}

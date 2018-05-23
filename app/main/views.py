@@ -1,15 +1,17 @@
 # coding=utf-8
 
 from flask import render_template, redirect, flash, url_for, request, abort, send_from_directory
-from flask import Blueprint
-from forms import PostForm, FindFile, EditInfoForm
+from flask import Blueprint, current_app, session
+from forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
 from flask_login import login_required, current_user
 from app import db
-from models import Category, Favorite, User, Comment, Role
+from werkzeug.utils import secure_filename
+from models import Category, Favorite, User, Comment, Role, Information
 import datetime
 import time
 from ..email import send_email
 import os
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash
 import threading
 from auth import logout
@@ -28,6 +30,12 @@ def edit():
         p.user = current_user.id
         p.update_time = datetime.datetime.now()
         db.session.add(p)
+        for _user in current_user.followers:
+            info = Information()
+            info.launch_id = current_user.id
+            info.receive_id = _user.follower_id
+            info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + p.title + u"。"
+            db.session.add(info)
         db.session.commit()
         flash(u'保存成功！', 'success')
         return redirect(url_for('main.edit'))
@@ -39,10 +47,9 @@ def index():
     return render_template("index.html")
 
 
-@main.route("/my_doc", methods=['GET', "POST"])
-@login_required
-def my_doc():
-    docs = Category.query.filter_by(user=current_user.id).all()
+@main.route("/my_doc/<key>", methods=['GET', "POST"])
+def my_doc(key):
+    docs = Category.query.filter_by(user=key).all()
     length = len(docs)
     return render_template("mydoc.html", length=length, docs=docs)
 
@@ -79,7 +86,7 @@ def dispaly(key):
 
     for _index in range(len(comments)):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
-
+        comments[_index].img = User.query.filter_by(id=comments[_index].author_id).first().id
         if current_user.is_anonymous:
             comments[_index].html = ""
 
@@ -105,6 +112,7 @@ def dispaly(key):
 @login_required
 def cancel(key):
     p = Category.query.filter_by(id=key).first()
+    user = User.query.filter_by(id=p.user).first()
     if not current_user.is_anonymous:
         is_collect = Favorite.query.filter_by(favorited_id=key, favorite_id=current_user.id).first()
     else:
@@ -118,7 +126,9 @@ def cancel(key):
     else:
         db.session.delete(is_collect)
         p.collect_num -= 1
+        user.collect_num -= 1
         db.session.add(p)
+        db.session.add(user)
         db.session.commit()
         flash(u"取消收藏成功!", "success")
         return redirect("/display/" + key)
@@ -150,7 +160,7 @@ def del_file(key):
     db.session.delete(p)
     db.session.commit()
     flash(u'删除成功！', 'success')
-    return redirect(url_for("main.my_doc"))
+    return redirect("/my_doc/"+str(current_user.id))
 
 '''
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
@@ -161,6 +171,7 @@ pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="Si
 @login_required
 def collect(key):
     p = Category.query.filter_by(id=key).first()
+    user = User.query.filter_by(id=p.user).first()
     if not p:
         flash(u'该文章不存在！', 'warning')
         abort(404)
@@ -168,6 +179,7 @@ def collect(key):
     f.favorite_id = current_user.id
     f.favorited_id = key
     p.collect_num += 1
+    user.collect_num += 1
     f.update_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if Favorite.query.filter_by(favorite_id=current_user.id, favorited_id=key).first():
         flash(u'文章已经收藏！', 'warning')
@@ -175,6 +187,7 @@ def collect(key):
 
     db.session.add(f)
     db.session.add(p)
+    db.session.add(user)
     db.session.commit()
     flash(u'收藏成功！', 'success')
     return redirect("/display/" + key)
@@ -261,7 +274,7 @@ def downloader(key):
             return send_from_directory(file_dir, pdf, as_attachment=True)
         elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
-            return redirect(url_for("main.my_doc"))
+            return redirect("/my_doc/" + current_user.id)
         else:
             count += 1
             time.sleep(1)
@@ -271,24 +284,26 @@ def downloader(key):
 def find_file():
     form = FindFile()
     hot_doc_list = Category.query.from_statement(
-        "SELECT * FROM markdown.category ORDER BY collect_num DESC LIMIT 5 ;").all()
+        text("SELECT * FROM markdown.category ORDER BY collect_num DESC LIMIT 5 ;")).all()
     for doc in hot_doc_list:
         doc.username = User.query.filter_by(id=doc.user).first().username
     if form.validate_on_submit():
         doc_list = Category.query.whoosh_search(form.input.data).all()
+
         for doc in doc_list:
             doc.username = User.query.filter_by(id=doc.user).first().username
         length = len(doc_list)
         if not doc_list:
             flash(u"没有找到符合要求的文章!", "warning")
             return redirect(url_for("main.find_file"))
+
         return render_template("find_file.html", form=form, doc_list=doc_list, length=length)
     return render_template("find_file.html", form=form, hot_doc_list=hot_doc_list)
 
 
-@main.route("/edit_info", methods=['GET', 'POST'])
+@main.route("/edit_email", methods=['GET', 'POST'])
 @login_required
-def edit_info():
+def edit_email():
     form = EditInfoForm()
 
     if request.method == "POST":
@@ -299,12 +314,6 @@ def edit_info():
             flash(u"该邮箱已经被注册过，请重新输入!", "warning")
             return redirect(url_for("main.edit_info"))
 
-        if User.query.filter_by(username=form.username.data).first() and current_user.username != form.username.data:
-            flash(u"该用户名已经被注册过，请重新输入!", "warning")
-            return redirect(url_for("main.edit_info"))
-
-        current_user.password = form.password.data
-        current_user.username = form.username.data
         current_user.email = form.email.data
         current_user.confirmed = False
         db.session.add(current_user)
@@ -319,7 +328,69 @@ def edit_info():
         logout()
         return redirect(url_for("auth.login"))
 
-    return render_template("edit_info.html", form=form)
+    return render_template("edit/edit_email.html", form=form)
+
+
+@main.route("/edit_basic", methods=['GET', 'POST'])
+@login_required
+def edit_basic():
+    form = EditBasic()
+    if request.method == "POST":
+        # filter 支持表达式 比 filter 更强大
+
+        if User.query.filter_by(username=form.username.data).first() and current_user.username != form.username.data:
+            flash(u"该用户名已经被注册过，请重新输入!", "warning")
+            return redirect(url_for("main.edit_basic"))
+
+        _file = request.files['filename'] if request.files. has_key("filename") else None
+        if _file:
+            _type = _file.filename.split(".")[-1].lower()
+
+            if not _type or _type not in ['jpeg', 'jpg', 'bmp', "png"]:
+                flash(u"图片格式错误，当前只支持'jpeg', 'jpg', 'bmp', 'png'!", "warning")
+                return redirect(url_for("main.edit_basic"))
+
+            dirname = current_app.config['UPLOAD_FOLDER']  # 截图存放地点
+            current_user.image_name = secure_filename(str(current_user.id) + "." + _type)
+            if not os.path.exists(dirname):
+                try:
+                    os.makedirs(dirname)
+                    _file.save(os.path.join(dirname, current_user.image_name))
+                except Exception as e:
+                    print e
+            else:
+                _file.save(os.path.join(dirname, current_user.image_name))
+
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        db.session.add(current_user)
+        db.session.commit()
+
+        flash(u"修改成功!", "success")
+        return redirect(url_for("main.index"))
+
+    return render_template("edit/edit_basic.html", form=form)
+
+
+@main.route("/edit_password", methods=['GET', 'POST'])
+@login_required
+def edit_password():
+    form = EditPassword()
+
+    if request.method == "POST":
+        if session['check'] != 'true' and not current_user.verify_password(form.old.data):
+            flash(u"用户密码错误，请重新输入!", "warning")
+            return redirect(url_for("main.edit_password"))
+
+        current_user.password = form.password.data
+        session['check'] = 'false'
+        db.session.add(current_user)
+        db.session.commit()
+
+        flash(u"修改成功!", "success")
+        return redirect(url_for("main.index"))
+
+    return render_template("edit/edit_password.html", form=form)
 
 
 @main.route("/add_comment/<key>", methods=["POST"])
@@ -333,6 +404,12 @@ def add_comment(key):
         if not Category.query.filter_by(id=key).first():
             abort(404)
         comment = Comment(body=info, author_id=current_user.id, post_id=key)
+        _info = Information()
+        _info.launch_id = current_user.id
+        category = Category.query.filter_by(id=key).first()
+        _info.receive_id = category.user
+        _info.info = u"用户" + current_user.username + u" 对您的文章" + category.title + u"进行了评论!"
+        db.session.add(_info)
         db.session.add(comment)
         db.session.commit()
         flash(u"添加成功!", "success")
@@ -348,6 +425,12 @@ def edit_comment(key):
         if not comment:
             abort(404)
         comment.body = info
+        _info = Information()
+        _info.launch_id = current_user.id
+        category = Category.query.filter_by(id=key).first()
+        _info.receive_id = category.user
+        _info.info = u"用户" + current_user.username + u" 对您的文章" + category.title + u"修改了评论!"
+        db.session.add(_info)
         comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(comment)
         db.session.commit()
@@ -398,3 +481,11 @@ def del_comment(key):
 #         flash(u"您无权屏蔽该条评论!", "warning")
 #         return redirect(url_for("/display/" + category.id))
 
+
+@main.route("/show_image/<key>", methods=['GET', 'POST'])
+def show_image(key):
+    user = User.query.filter_by(id=key).first()
+    if not user:
+        return send_from_directory(current_app.config['UPLOAD_FOLDER'], "-1.jpg")
+    else:
+        return send_from_directory(current_app.config['UPLOAD_FOLDER'], user.image_name)

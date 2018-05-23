@@ -1,13 +1,12 @@
 # coding=utf-8
 
 from flaskext.markdown import Markdown
-from flask import Flask, render_template
+from flask import Flask, render_template, g, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flask_mail import Mail
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from whoosh.analysis import StemmingAnalyzer
-import flask_whooshalchemy
 
 
 db = SQLAlchemy()
@@ -27,8 +26,23 @@ def create_app(config_name):
     login_manager.init_app(app)
     from app.main.views import main
     from app.main.auth import auth
+    from app.main.user import user
+
+    @main.before_request
+    @user.before_request
+    def before_request():
+        if current_user.is_active:
+            message_nums = len([info for info in current_user.received if info.confirm is False])
+            if message_nums > 0:
+                g.message_nums = message_nums
+            else:
+                g.message_nums = None
+        else:
+            return redirect(url_for('auth.login'))
+
     app.register_blueprint(auth)
     app.register_blueprint(main)
+    app.register_blueprint(user)
 
     @app.errorhandler(404)
     def page_not_find(e):

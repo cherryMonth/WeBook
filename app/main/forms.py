@@ -1,5 +1,5 @@
 # coding=utf-8
-from wtforms import StringField, TextAreaField, SelectMultipleField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, TextAreaField, SelectMultipleField, SubmitField, PasswordField, BooleanField, FileField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Length
 from models import Category
@@ -21,7 +21,12 @@ class PostForm(FlaskForm):
 
 
 class FindFile(FlaskForm):
-    input = StringField("", render_kw={'placeholder': u'输入您想查找的关键字...'})
+    input = StringField("", render_kw={'placeholder': u'输入您想查找的文章内容...'})
+    submit = SubmitField(u"查找")
+
+
+class FindUser(FlaskForm):
+    input = StringField("", render_kw={'placeholder': u'输入您想查找的用户名...'})
     submit = SubmitField(u"查找")
 
 
@@ -36,6 +41,8 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     email = StringField(u'邮箱')
     username = StringField(u'用户名')
+    filename = FileField(u"用户头像")
+    about_me = TextAreaField(u"个人简介")
     password = PasswordField(u'密码')
     password2 = PasswordField(u'确认密码')
     submit = SubmitField(u'注册')
@@ -51,8 +58,18 @@ class ForgetForm(FlaskForm):
 
 class EditInfoForm(FlaskForm):
     email = StringField(u'邮箱')
+    submit = SubmitField(u'提交')
+
+
+class EditBasic(FlaskForm):
     username = StringField(u'用户名')
+    filename = FileField(u"上传用户头像")
+    about_me = TextAreaField(u"个人简介")
+    submit = SubmitField(u'提交')
+
+
+class EditPassword(FlaskForm):
+    old = PasswordField(u"原密码")
     password = PasswordField(u'密码')
     password2 = PasswordField(u'确认密码')
     submit = SubmitField(u'提交')
-
