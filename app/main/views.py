@@ -30,11 +30,13 @@ def edit():
         p.user = current_user.id
         p.update_time = datetime.datetime.now()
         db.session.add(p)
+        db.session.commit()
         for _user in current_user.followers:
             info = Information()
             info.launch_id = current_user.id
             info.receive_id = _user.follower_id
-            info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + p.title + u"。"
+            info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + u"<a style='color: #d82433' " \
+                u"href='{}'>{}</a>".format(u"/display/"+str(p.id), p.title) + u"。"
             db.session.add(info)
         db.session.commit()
         flash(u'保存成功！', 'success')
@@ -160,7 +162,7 @@ def del_file(key):
     db.session.delete(p)
     db.session.commit()
     flash(u'删除成功！', 'success')
-    return redirect("/my_doc/"+current_user.id)
+    return redirect("/my_doc/"+str(current_user.id))
 
 '''
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
@@ -274,7 +276,7 @@ def downloader(key):
             return send_from_directory(file_dir, pdf, as_attachment=True)
         elif count == 20:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
-            return redirect("/my_doc/" + current_user.id)
+            return redirect("/my_doc/" + str(current_user.id))
         else:
             count += 1
             time.sleep(1)
@@ -408,7 +410,8 @@ def add_comment(key):
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
-        _info.info = u"用户" + current_user.username + u" 对您的文章" + category.title + u"进行了评论!"
+        _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
+            u"href='{}'>{}</a>".format(u"/display/"+str(category.id), category.title) + u"进行了评论!"
         db.session.add(_info)
         db.session.add(comment)
         db.session.commit()
@@ -427,9 +430,10 @@ def edit_comment(key):
         comment.body = info
         _info = Information()
         _info.launch_id = current_user.id
-        category = Category.query.filter_by(id=key).first()
+        category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user
-        _info.info = u"用户" + current_user.username + u" 对您的文章" + category.title + u"修改了评论!"
+        _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
+            u"href='{}'>{}</a>".format(u"/display/" + str(category.id), category.title) + u"修改了评论!"
         db.session.add(_info)
         comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(comment)

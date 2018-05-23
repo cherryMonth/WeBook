@@ -25,7 +25,7 @@ def find_user():
         length = len(user_list)
         if not user_list:
             flash(u"没有找到符合要求的用户!", "warning")
-            return redirect(url_for("main.find_file"))
+            return redirect(url_for("user.find_user"))
 
         return render_template("find_user.html", form=form, user_list=user_list, length=length)
     return render_template("find_user.html", form=form, hot_user_list=hot_user_list)
