@@ -48,7 +48,7 @@
                     <img src="/show_image/{{info.launch_id}}" style="height: 30px;width: 30px">&nbsp;{{info.author.username}}
             </td>
             <td style="color: black;word-wrap:break-word;">
-                {{ info.info }}
+                {{ info.info | safe}}
             </td>
             <td style="color: black;word-wrap:break-word;">
                 {{ info.time }}
