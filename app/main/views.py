@@ -159,6 +159,8 @@ def del_file(key):
     if not p:
         flash(u'该文章不存在！', 'warning')
         abort(404)
+    current_user.collect_num -= p.collect_num
+    db.session.add(current_user)
     db.session.delete(p)
     db.session.commit()
     flash(u'删除成功！', 'success')
