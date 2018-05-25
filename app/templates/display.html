@@ -76,7 +76,7 @@
         <tbody>
         {% for comment in comments %}
             <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;{{comment.author}}</td>
-            <td style="color:black">{{comment.body|safe}}</td>
+            <td style="color:black" >{{comment.body|markdown}}</td>
             <td style="color:black">{{comment.timestamp}}</td>
             <td style="color:black">{{comment.html|safe}}</td>
         </tr>

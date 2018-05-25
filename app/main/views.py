@@ -5,6 +5,7 @@ from flask import Blueprint, current_app, session
 from forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
 from flask_login import login_required, current_user
 from app import db
+import cgi
 from werkzeug.utils import secure_filename
 from models import Category, Favorite, User, Comment, Role, Information
 import datetime
@@ -276,7 +277,7 @@ def downloader(key):
     while True:
         if os.path.exists(pdf_name):
             return send_from_directory(file_dir, pdf, as_attachment=True)
-        elif count == 20:
+        elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
             return redirect("/my_doc/" + str(current_user.id))
         else:
@@ -407,7 +408,7 @@ def add_comment(key):
         info = request.form["comment"]
         if not Category.query.filter_by(id=key).first():
             abort(404)
-        comment = Comment(body=info, author_id=current_user.id, post_id=key)
+        comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=key)
         _info = Information()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
