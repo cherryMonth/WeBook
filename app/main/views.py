@@ -5,6 +5,7 @@ from flask import Blueprint, current_app, session
 from forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
 from flask_login import login_required, current_user
 from app import db
+import cgi
 from werkzeug.utils import secure_filename
 from models import Category, Favorite, User, Comment, Role, Information
 import datetime
@@ -407,7 +408,7 @@ def add_comment(key):
         info = request.form["comment"]
         if not Category.query.filter_by(id=key).first():
             abort(404)
-        comment = Comment(body=info, author_id=current_user.id, post_id=key)
+        comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=key)
         _info = Information()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
