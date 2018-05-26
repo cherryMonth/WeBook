@@ -162,6 +162,9 @@ def del_file(key):
         abort(404)
     current_user.collect_num -= p.collect_num
     db.session.add(current_user)
+    filename = os.getcwd() + "/markdown/" + str(p.id) + ".pdf"
+    if os.path.exists(filename):
+        os.system("rm -f {} ".format(filename))
     db.session.delete(p)
     db.session.commit()
     flash(u'删除成功！', 'success')
@@ -210,6 +213,9 @@ def edit_file(key):
         p.title = request.values.get("title")
         p.content = request.values.get("text")
         p.update_time = datetime.datetime.now()
+        filename = os.getcwd() + "/markdown/" + str(p.id) + ".pdf"
+        if os.path.exists(filename):
+            os.system("rm -f {} ".format(filename))
         db.session.add(p)
         db.session.commit()
         flash(u'保存成功！', 'success')
@@ -230,9 +236,13 @@ def downloader(key):
     file_dir = os.getcwd() + "/markdown"
     filename = file_dir + "/" + name
     pdf_name = file_dir + "/" + pdf
-    info = p.content.encode("utf-8")
+
+    if os.path.exists(pdf_name):
+        return send_from_directory(file_dir, pdf, as_attachment=True)
+
     import cgi
     import re
+    info = p.content.encode("utf-8")
     _file = open(filename, "wb")
     line_list = info.split("\n")
     pattren = re.compile(r"\|.+\|")
@@ -265,14 +275,13 @@ def downloader(key):
         _file.write(tmp + "\n")
     _file.close()
 
-    # pandoc test.md --template eisvogel --pdf-engine xelatex -o e.pdf -V CJKmainfont='SimSun' -N --highlight-style pygments --listings
-
     def work():
-        os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  --highlight-style pygments --listings ".format(filename, pdf_name))
+        os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
+                  "--highlight-style pygments --listings ".format(filename, pdf_name))
 
     t = threading.Thread(target=work, args=())
     t.start()
-    # os.system("rm -f " + filename)
+
     count = 0
     while True:
         if os.path.exists(pdf_name):
