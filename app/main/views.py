@@ -8,9 +8,9 @@ from app import db
 from werkzeug.utils import secure_filename
 from models import Category, Favorite, User, Comment, Role, Information
 import datetime
-import time
 from ..email import send_email
 import os
+import time
 from sqlalchemy import text
 import subprocess
 import threading
@@ -26,14 +26,15 @@ file_dir = os.getcwd() + "/markdown"
 user_page = dict()
 
 
-def pop(key):
-    user_page.pop(key, None)
+def pop(args):
+    user_page.pop(args[0], None)
 
 
 def work(_id, info):
     name = _id + ".md"
     pdf = _id + ".pdf"
     filename = file_dir + "/" + name
+    print filename
     pdf_name = file_dir + "/" + pdf
     _file = open(filename, "wb")
     line_list = info.split("\n")
@@ -94,6 +95,8 @@ def edit():
         t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
         t.start()
         db.session.commit()
+        t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
+        t.start()
 
         flash(u'保存成功！', 'success')
         return redirect(url_for('main.edit'))
@@ -338,8 +341,9 @@ def downloader(key):
                 "--highlight-style pygments --listings ".format(filename, pdf_name)
         import shlex
         popen = subprocess.Popen(shlex.split(shell), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        IOLoop.instance().add_timeout(50, callback=pop, args=(str(p.id, )))
-
+        IOLoop.instance().add_timeout(50, callback=pop, args=(str(p.id), ))
+    else:
+        print "have one working"
     count = 0
 
     while True:
@@ -350,8 +354,14 @@ def downloader(key):
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
             return redirect("/my_doc/" + str(current_user.id))
         else:
-            line = popen.stdout.readline()
-            error = popen.stderr.readline()
+            if popen and popen.poll() is None:
+                line = popen.stdout.readline()
+                line += popen.stderr.readline()
+                print line
+                if 'Error' in line or 'Warning' in line or "Could not" in line or 'WARNING' in line:
+                    popen.terminate()
+                    flash(u'导出失败, {}'.format(line), 'warning')
+                    return redirect("/my_doc/" + str(current_user.id))
             count += 1
             time.sleep(1)
 
@@ -567,3 +577,4 @@ def show_image(key):
         return send_from_directory(current_app.config['UPLOAD_FOLDER'], "-1.jpg")
     else:
         return send_from_directory(current_app.config['UPLOAD_FOLDER'], user.image_name)
+

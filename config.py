@@ -28,9 +28,9 @@ class ServerConfig(object):
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     path = sys.path[0]
     if os.path.isdir(path):
-        UPLOAD_FOLDER = path + u"\images\\"
+        UPLOAD_FOLDER = path + u"/images/"
     else:
-        UPLOAD_FOLDER = os.path.dirname(path) + u"\images\\"
+        UPLOAD_FOLDER = os.path.dirname(path) + u"/images/"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
                               os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
