@@ -5,4 +5,7 @@ venv
 *.xml
 *.ini
 *.pyc
+*.md
+*.pdf
 migrations
+
