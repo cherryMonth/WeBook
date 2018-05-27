@@ -7,5 +7,7 @@ venv
 *.pyc
 *.md
 *.pdf
+*.toc
+*.seg
 migrations
 
