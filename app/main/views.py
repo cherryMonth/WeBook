@@ -8,9 +8,9 @@ from app import db
 from werkzeug.utils import secure_filename
 from models import Category, Favorite, User, Comment, Role, Information
 import datetime
-import time
 from ..email import send_email
 import os
+import time
 from sqlalchemy import text
 import subprocess
 import threading
@@ -92,6 +92,8 @@ def edit():
             info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + u"<a style='color: #d82433' " \
                 u"href='{}'>{}</a>".format(u"/display/"+str(p.id), p.title) + u"。"
             db.session.add(info)
+        t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
+        t.start()
         db.session.commit()
         t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
         t.start()
@@ -225,9 +227,9 @@ def del_file(key):
     flash(u'删除成功！', 'success')
     return redirect("/my_doc/"+str(current_user.id))
 
-'''
+"""
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
-'''
+"""
 
 
 @main.route("/collect/<key>", methods=['GET', 'POST'])
