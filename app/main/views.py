@@ -5,7 +5,6 @@ from flask import Blueprint, current_app, session
 from forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
 from flask_login import login_required, current_user
 from app import db
-import cgi
 from werkzeug.utils import secure_filename
 from models import Category, Favorite, User, Comment, Role, Information
 import datetime
@@ -13,11 +12,65 @@ import time
 from ..email import send_email
 import os
 from sqlalchemy import text
-from werkzeug.security import generate_password_hash
+import subprocess
 import threading
 from auth import logout
+import cgi
+from tornado.ioloop import IOLoop
+import re
 
 main = Blueprint("main", __name__)
+
+file_dir = os.getcwd() + "/markdown"
+
+user_page = dict()
+
+
+def pop(args):
+    user_page.pop(args[0], None)
+
+
+def work(_id, info):
+    name = _id + ".md"
+    pdf = _id + ".pdf"
+    filename = file_dir + "/" + name
+    print filename
+    pdf_name = file_dir + "/" + pdf
+    _file = open(filename, "wb")
+    line_list = info.split("\n")
+    pattren = re.compile(r"\|.+\|")
+    begin = re.compile(r"\|[-]+\|")
+
+    tmp = ""
+    status = False
+
+    for line in line_list:
+        if begin.match("".join(line.split())) and tmp:
+            status = True
+        elif pattren.match(line.strip()) and not status:
+            if tmp:
+                _file.write(tmp + "\n")
+            tmp = line
+            continue
+        elif status and not pattren.match(line.strip()):
+            status = False
+        if status:
+            if tmp:
+                _file.write(cgi.escape(tmp) + "\n")
+            _file.write(cgi.escape(line) + "\n")
+        else:
+            if tmp:
+                _file.write(tmp + "\n")
+            _file.write(line + "\n")
+        tmp = ""
+
+    if tmp:
+        _file.write(tmp + "\n")
+    _file.close()
+    user_page[_id] = 'work'
+    os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
+              "--highlight-style pygments --listings ".format(filename, pdf_name))
+    IOLoop.instance().add_timeout(50, callback=pop, args=(_id, ))
 
 
 @main.route("/create_doc", methods=['GET', "POST"])
@@ -40,6 +93,9 @@ def edit():
                 u"href='{}'>{}</a>".format(u"/display/"+str(p.id), p.title) + u"。"
             db.session.add(info)
         db.session.commit()
+        t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
+        t.start()
+
         flash(u'保存成功！', 'success')
         return redirect(url_for('main.edit'))
     return render_template('edit.html', form=form)
@@ -148,9 +204,8 @@ def show_collect():
         page = Category.query.filter_by(id=_collect.favorited_id).first()
         page.update_time = Favorite.query.filter_by(favorited_id=_collect.favorited_id).first().update_time
         doc_list.append(page)
-    length = len(doc_list)
 
-    return render_template("collect.html", doc_list=doc_list, length=length)
+    return render_template("collect.html", doc_list=doc_list, length=len(doc_list))
 
 
 @main.route("/del_file/<key>", methods=['GET', "POST"])
@@ -218,6 +273,8 @@ def edit_file(key):
             os.system("rm -f {} ".format(filename))
         db.session.add(p)
         db.session.commit()
+        t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
+        t.start()
         flash(u'保存成功！', 'success')
         return redirect(url_for('main.edit'))
     return render_template('edit.html', form=form)
@@ -231,65 +288,78 @@ def downloader(key):
         flash(u'该文章不存在！', 'warning')
         abort(404)
 
-    name = generate_password_hash(key)[20:25] + ".md"
-    pdf = name[:-3] + ".pdf"
-    file_dir = os.getcwd() + "/markdown"
-    filename = file_dir + "/" + name
+    pdf = str(p.id) + ".pdf"
     pdf_name = file_dir + "/" + pdf
 
     if os.path.exists(pdf_name):
         return send_from_directory(file_dir, pdf, as_attachment=True)
 
-    import cgi
-    import re
-    info = p.content.encode("utf-8")
-    _file = open(filename, "wb")
-    line_list = info.split("\n")
-    pattren = re.compile(r"\|.+\|")
-    begin = re.compile(r"\|[-]+\|")
+    popen = None
+    if not user_page. has_key(str(p.id)):
+        info = p.content.encode("utf-8")
+        name = str(p.id) + ".md"
+        pdf = str(p.id) + ".pdf"
+        filename = file_dir + "/" + name
+        pdf_name = file_dir + "/" + pdf
+        _file = open(filename, "wb")
+        line_list = info.split("\n")
+        pattren = re.compile(r"\|.+\|")
+        begin = re.compile(r"\|[-]+\|")
 
-    tmp = ""
-    status = False
-
-    for line in line_list:
-        if begin.match("".join(line.split())) and tmp:
-            status = True
-        elif pattren.match(line.strip()) and not status:
-            if tmp:
-                _file.write(tmp + "\n")
-            tmp = line
-            continue
-        elif status and not pattren.match(line.strip()):
-            status = False
-        if status:
-            if tmp:
-                _file.write(cgi.escape(tmp) + "\n")
-            _file.write(cgi.escape(line) + "\n")
-        else:
-            if tmp:
-                _file.write(tmp + "\n")
-            _file.write(line + "\n")
         tmp = ""
+        status = False
 
-    if tmp:
-        _file.write(tmp + "\n")
-    _file.close()
+        for line in line_list:
+            if begin.match("".join(line.split())) and tmp:
+                status = True
+            elif pattren.match(line.strip()) and not status:
+                if tmp:
+                    _file.write(tmp + "\n")
+                tmp = line
+                continue
+            elif status and not pattren.match(line.strip()):
+                status = False
+            if status:
+                if tmp:
+                    _file.write(cgi.escape(tmp) + "\n")
+                _file.write(cgi.escape(line) + "\n")
+            else:
+                if tmp:
+                    _file.write(tmp + "\n")
+                _file.write(line + "\n")
+            tmp = ""
 
-    def work():
-        os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
-                  "--highlight-style pygments --listings ".format(filename, pdf_name))
+        if tmp:
+            _file.write(tmp + "\n")
+        _file.close()
 
-    t = threading.Thread(target=work, args=())
-    t.start()
+        user_page[str(p.id)] = 'work'
 
+        shell = "pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  " \
+                "--highlight-style pygments --listings ".format(filename, pdf_name)
+        import shlex
+        popen = subprocess.Popen(shlex.split(shell), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        IOLoop.instance().add_timeout(50, callback=pop, args=(str(p.id), ))
+    else:
+        print "have one working"
     count = 0
+
     while True:
         if os.path.exists(pdf_name):
             return send_from_directory(file_dir, pdf, as_attachment=True)
+
         elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
             return redirect("/my_doc/" + str(current_user.id))
         else:
+            if popen and popen.poll() is None:
+                line = popen.stdout.readline()
+                line += popen.stderr.readline()
+                print line
+                if 'Error' in line or 'Warning' in line or "Could not" in line or 'WARNING' in line:
+                    popen.terminate()
+                    flash(u'导出失败, {}'.format(line), 'warning')
+                    return redirect("/my_doc/" + str(current_user.id))
             count += 1
             time.sleep(1)
 
@@ -505,3 +575,4 @@ def show_image(key):
         return send_from_directory(current_app.config['UPLOAD_FOLDER'], "-1.jpg")
     else:
         return send_from_directory(current_app.config['UPLOAD_FOLDER'], user.image_name)
+
