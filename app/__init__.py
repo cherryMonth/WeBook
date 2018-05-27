@@ -37,8 +37,6 @@ def create_app(config_name):
                 g.message_nums = message_nums
             else:
                 g.message_nums = None
-        else:
-            return redirect(url_for('auth.login'))
 
     app.register_blueprint(auth)
     app.register_blueprint(main)
