@@ -1,28 +1,27 @@
 backports-abc==0.5
+blinker==1.4
+certifi==2018.4.16
 click==6.7
 Flask==0.12.2
 flask-blueprint==1.2.2
+Flask-Login==0.4.1
+Flask-Mail==0.9.1
 Flask-Markdown==0.3
+Flask-MySQL==1.4.0
 Flask-SQLAlchemy==2.3.2
+Flask-WhooshAlchemy==0.56
 Flask-WTF==0.14.2
 futures==3.2.0
 itsdangerous==0.24
 Jinja2==2.10
 Markdown==2.6.11
 MarkupSafe==1.0
+MySQL-python==1.2.5
+PyMySQL==0.8.1
 singledispatch==3.4.0.3
 six==1.11.0
 SQLAlchemy==1.2.5
 tornado==5.0
 Werkzeug==0.14.1
+Whoosh==2.7.4
 WTForms==2.1
-
-<div class="container" style="display: block;">
-    <div class="col-md-8 col-md-offset-2">
-        <div class="section-title">
-                        <h2>{{post.title}}</h2>
-						<hr>
-                    </div>
-        {{post.html|safe}}
-</div>
-</div>
