@@ -242,6 +242,7 @@ def collect(key):
         abort(404)
     f = Favorite()
     f.favorite_id = current_user.id
+    f.update_time = datetime.datetime.now()
     f.favorited_id = key
     p.collect_num += 1
     user.collect_num += 1
@@ -490,7 +491,9 @@ def add_comment(key):
         if not Category.query.filter_by(id=key).first():
             abort(404)
         comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=key)
+        comment.timestamp = datetime.datetime.now()
         _info = Information()
+        _info.time = datetime.datetime.now()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
@@ -513,6 +516,7 @@ def edit_comment(key):
             abort(404)
         comment.body = info
         _info = Information()
+        _info.time = datetime.datetime.now()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user

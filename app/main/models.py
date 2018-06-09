@@ -62,7 +62,7 @@ class Information(db.Model):
 
     receive_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    time = db.Column(db.DateTime, nullable=False, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    time = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
     confirm = db.Column(db.Boolean, default=False)
 
@@ -74,7 +74,7 @@ class Favorite(db.Model):
 
     favorite_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     favorited_id = db.Column(db.Integer, db.ForeignKey("category.id"), primary_key=True)
-    update_time = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), nullable=True)
+    update_time = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
 
 class Comment(db.Model):
@@ -82,7 +82,7 @@ class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     body = db.Column(db.String(150), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), nullable=True)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now())
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)  # 哪篇文章
     # disabled = db.Column(db.Boolean, default=False)  # 是否隐藏
@@ -98,7 +98,7 @@ class Category(db.Model):
     user = db.Column(db.Integer(), db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(30), nullable=False)
     content = db.Column(db.Text(100000), nullable=False)
-    update_time = db.Column(db.DateTime, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), nullable=True)
+    update_time = db.Column(db.DateTime, nullable=False, default=datetime.now())
     collect_num = db.Column(db.Integer(), default=0, nullable=False)
     commented = db.relationship('Comment',  # 记录文章的评论数
                                backref=db.backref('post', lazy='joined'),
@@ -126,7 +126,7 @@ class Follow(db.Model):
                             primary_key=True)
     followed_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
 
 class User(db.Model, UserMixin):
@@ -151,7 +151,7 @@ class User(db.Model, UserMixin):
 
     about_me = db.Column(db.String(100), default="")
 
-    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.now())
 
     avatar_hash = db.Column(db.String(32))
 
@@ -263,7 +263,7 @@ class User(db.Model, UserMixin):
             db.session.commit()
 
     def ping(self):
-        self.last_seen = datetime.utcnow()
+        self.last_seen = datetime.now()
         from app import db
         # 之所以在这里加上 import db 是因为要使用同一个db对象 如果不引用将会在多个会话中出现不同的db对象 编译器将会报错
         db.session.add(self)
