@@ -1,12 +1,13 @@
 # coding=utf-8
 
-from flask import render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for, request
 from flask import Blueprint
 from forms import FindUser
 from models import User, Information
 from app import db
 from flask_login import login_required, current_user
 from sqlalchemy import text
+import json
 
 user = Blueprint("user", __name__)
 
@@ -128,3 +129,22 @@ def follow_me():
     users = current_user.followers
     user_list = [User.query.filter_by(id=_user.follower_id).first() for _user in users]
     return render_template("edit/edit_follow_me.html", user_list=user_list)
+
+
+@user.route("/get_user_info/", methods=['GET', 'POST'])
+def get_user_info():
+
+    key = request.args.get('key') or ""
+    password = request.args.get('password')
+    _user = User.query.filter_by(id=key).first()
+    info = dict()
+    if password and _user and _user.verify_password(password):
+        # 对象的序列化为字典 info.update(_user.__dict__)
+        info['username'] = _user.username
+        info['follow_num'] = _user.follow_num
+        info['image_name'] = "http://cherrymonth.top:5000/show_image/{}".format(_user.id)
+        info['about_me'] = _user.about_me
+        info['id'] = _user.id
+        info['collect_num'] = _user.collect_num
+        info['email'] = _user.email
+    return json.dumps(json.dumps(info))
