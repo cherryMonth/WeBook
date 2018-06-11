@@ -134,9 +134,9 @@ def follow_me():
 @user.route("/get_user_info/", methods=['GET', 'POST'])
 def get_user_info():
 
-    key = request.args.get('key') or ""
+    key = request.args.get('email') or ""
     password = request.args.get('password')
-    _user = User.query.filter_by(id=key).first()
+    _user = User.query.filter_by(email=key).first()
     info = dict()
     if password and _user and _user.verify_password(password):
         # 对象的序列化为字典 info.update(_user.__dict__)
