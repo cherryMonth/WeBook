@@ -147,4 +147,4 @@ def get_user_info():
         info['id'] = _user.id
         info['collect_num'] = _user.collect_num
         info['email'] = _user.email
-    return json.dumps(json.dumps(info))
+    return json.dumps(info)
