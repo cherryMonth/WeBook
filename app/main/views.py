@@ -27,10 +27,12 @@ user_page = dict()
 
 
 def pop(args):
+    print str(args[0]) + "has pop!"
     user_page.pop(args[0], None)
 
 
 def work(_id, info):
+    print _id + "begin work"
     name = _id + ".md"
     pdf = _id + ".pdf"
     filename = file_dir + "/" + name
@@ -68,9 +70,9 @@ def work(_id, info):
         _file.write(tmp + "\n")
     _file.close()
     user_page[_id] = 'work'
+    IOLoop.instance().add_timeout(50, callback=pop, args=(_id, ))
     os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
               "--highlight-style pygments --listings ".format(filename, pdf_name))
-    IOLoop.instance().add_timeout(50, callback=pop, args=(_id, ))
 
 
 @main.route("/create_doc", methods=['GET', "POST"])
@@ -302,6 +304,8 @@ def downloader(key):
 
     popen = None
     if not user_page. has_key(str(p.id)):
+        user_page[str(p.id)] = 'work'
+        print str(p.id) + "begin work"
         info = p.content.encode("utf-8")
         name = str(p.id) + ".md"
         pdf = str(p.id) + ".pdf"
@@ -356,6 +360,7 @@ def downloader(key):
 
         elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
+            IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
             return redirect("/my_doc/" + str(current_user.id))
         else:
             if popen and popen.poll() is None:
@@ -365,6 +370,7 @@ def downloader(key):
                 if 'Error' in line or 'Warning' in line or "Could not" in line or 'WARNING' in line:
                     popen.terminate()
                     flash(u'导出失败, {}'.format(line), 'warning')
+                    IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
                     return redirect("/my_doc/" + str(current_user.id))
             count += 1
             time.sleep(1)
