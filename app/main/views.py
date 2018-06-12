@@ -117,7 +117,7 @@ def my_doc(key, _id):
     length = len(temp.all())
     page_num = length / 10 if length % 10 == 0 else length / 10 + 1
     # 总数量 文章列表 当前id 总页数
-    return render_template("mydoc.html", length=length, docs=docs, page=_id, page_num=page_num)
+    return render_template("mydoc.html", key=key, length=length, docs=docs, page=_id, page_num=page_num)
 
 
 @main.route("/display/<key>", methods=['GET', "POST"])
@@ -361,7 +361,7 @@ def downloader(key):
         elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
             IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
-            return redirect("/my_doc/" + str(current_user.id))
+            return redirect(url_for("main.my_doc", key=current_user.id, _id=1))
         else:
             if popen and popen.poll() is None:
                 line = popen.stdout.readline()
@@ -371,7 +371,7 @@ def downloader(key):
                     popen.terminate()
                     flash(u'导出失败, {}'.format(line), 'warning')
                     IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
-                    return redirect("/my_doc/" + str(current_user.id))
+                    return redirect(url_for("main.my_doc", key=current_user.id, _id=1))
             count += 1
             time.sleep(1)
 

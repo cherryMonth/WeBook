@@ -74,22 +74,22 @@
                 </table>
                 <div style="margin-left:30%;margin-top:5%" id="barcon">
                     {% if page == 1 %}
-                        <a href="{{ url_for('main.my_doc', key=current_user.id, _id=page) }}">&lt;上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        <a href="{{ url_for('main.my_doc', key=key, _id=page) }}">&lt;上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
                     {% else %}
-                        <a href="{{ url_for('main.my_doc', key=current_user.id, _id=page - 1) }}">&lt;上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        <a href="{{ url_for('main.my_doc', key=key, _id=page - 1) }}">&lt;上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
                     {% endif %}
                     {% for index in range(1, page_num + 1) %}
                         {% if index == page %}
                             <a style="color: #c59a6d;font-weight:bold;"
-                               href="{{ url_for('main.my_doc', key=current_user.id, _id=index) }}">{{ index }}&nbsp;&nbsp;&nbsp;</a>
+                               href="{{ url_for('main.my_doc', key=key, _id=index) }}">{{ index }}&nbsp;&nbsp;&nbsp;</a>
                         {% else %}
-                            <a href="{{ url_for('main.my_doc', key=current_user.id, _id=index) }}">{{ index }}&nbsp;&nbsp;&nbsp;</a>
+                            <a href="{{ url_for('main.my_doc', key=key, _id=index) }}">{{ index }}&nbsp;&nbsp;&nbsp;</a>
                         {% endif %}
                     {% endfor %}
                     {% if page == page_num %}
-                        <a href="{{ url_for('main.my_doc', key=current_user.id, _id=page) }}">下一页&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        <a href="{{ url_for('main.my_doc', key=key, _id=page) }}">下一页&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
                     {% else %}
-                        <a href="{{ url_for('main.my_doc', key=current_user.id, _id=page + 1) }}">下一页&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                        <a href="{{ url_for('main.my_doc', key=key, _id=page + 1) }}">下一页&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
                     {% endif %}
                 </div>
             {% else %}
