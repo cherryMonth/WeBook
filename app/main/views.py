@@ -97,8 +97,6 @@ def edit():
         t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
         t.start()
         db.session.commit()
-        t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
-        t.start()
 
         flash(u'保存成功！', 'success')
         return redirect(url_for('main.edit'))
