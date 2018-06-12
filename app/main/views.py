@@ -108,11 +108,14 @@ def index():
     return render_template("index.html")
 
 
-@main.route("/my_doc/<key>", methods=['GET', "POST"])
-def my_doc(key):
-    docs = Category.query.filter_by(user=key).all()
-    length = len(docs)
-    return render_template("mydoc.html", length=length, docs=docs)
+@main.route("/my_doc/<int:key>/<int:_id>", methods=['GET', "POST"])
+def my_doc(key, _id):
+    temp = Category.query.filter_by(user=key)
+    docs = temp.paginate(_id, 10, error_out=True).items
+    length = len(temp.all())
+    page_num = length / 10 if length % 10 == 0 else length / 10 + 1
+    # 总数量 文章列表 当前id 总页数
+    return render_template("mydoc.html", length=length, docs=docs, page=_id, page_num=page_num)
 
 
 @main.route("/display/<key>", methods=['GET', "POST"])
@@ -210,9 +213,9 @@ def show_collect():
     return render_template("collect.html", doc_list=doc_list, length=len(doc_list))
 
 
-@main.route("/del_file/<key>", methods=['GET', "POST"])
+@main.route("/del_file/<int:key>/<int:page>", methods=['GET', "POST"])
 @login_required
-def del_file(key):
+def del_file(key, page):
     p = Category.query.filter_by(id=key, user=current_user.id).first()
     if not p:
         flash(u'该文章不存在！', 'warning')
@@ -225,7 +228,7 @@ def del_file(key):
     db.session.delete(p)
     db.session.commit()
     flash(u'删除成功！', 'success')
-    return redirect("/my_doc/"+str(current_user.id))
+    return redirect(url_for("main.my_doc", key=current_user.id, _id=page))
 
 """
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
@@ -259,7 +262,7 @@ def collect(key):
     return redirect("/display/" + key)
 
 
-@main.route("/edit_file/<key>", methods=['GET', "POST"])
+@main.route("/edit_file/<int:key>", methods=['GET', "POST"])
 @login_required
 def edit_file(key):
     p = Category.query.filter_by(id=key, user=current_user.id).first()
