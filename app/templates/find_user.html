@@ -1,145 +1,210 @@
 {% extends "index.html" %}
 
 {% block metas %}
-{{super()}}
+    {{ super() }}
 {% endblock metas %}
 
 {% block title %}关注用户 {% endblock title %}
 
 {% block styles %}
-{{super()}}
-<script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
-<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+    {{ super() }}
+    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery-1.8.min.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-{% block navbar %}
-{{super()}}
-{% endblock navbar %}
-{% block message %}
-<div class="container" id="flash" style="text-align:center;margin-top:1%">
-    <div class="row clearfix">
-        {% for message in get_flashed_messages(with_categories=True) %}
-        {% if message[1] != 'Please log in to access this page.' %}
-        <div class="alert alert-{{ message[0] }}">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{ message[1] }}
-        </div>
-        {% endif %}
-        {% endfor %}
-    </div>
-</div>
-{% endblock message %}
-
-{% block content %}
-<div class="row" style="margin-top:5%">
-    <form method="post">
-        {{ form.hidden_tag() }}
-        <div class="container">
-            <div class="form-group" style="float:left">
-                {{ form.input(class='form-control', style="width:500px;margin-left:20%", maxlength="30",
-                required="required") }}
-            </div>
-            <div class="form-group" style="float:right">
-                {{ form.submit(class="btn btn-default submit", style="height:50px;") }}
-            </div>
-        </div>
-    </form>
-</div>
-
-{% if hot_user_list %}
-<div class="container text-center">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="section-title">
-                <h2>当红炸子鸡</h2>
-                <hr>
-            </div>
-        </div>
-    </div>
-    {% for user in hot_user_list %}
-    <div class="row">
-        <div class="col-md-4 col-sm-4" style="width:100%;margin-bottom:20px;">
-            <div class="service" style="padding-top:0px">
-                <h1 style="text-align: left"><img src="/show_image/{{user.id}}"
-                                                  style="height: 50px;width: 50px">&nbsp;&nbsp;{{user.username}}</h1>
-                <h3 style="text-align: left;margin-top:50px">个人简介</h3>
-                <h4 class="line-limit-length" style="margin-top: 50px;margin-left: 20%"><a>{{user.about_me}}</a></h4>
-                <hr style="width: 60%;">
-                <h4 style="margin-top: 50px;"><a>粉丝数: {{user.follow_num}} 战斗力</a><a style="margin-left: 20%;">文章被收藏数:
-                    {{user.collect_num}} 摄氏度</a></h4>
-                <h4 style="margin-top:50px;">{% if not current_user.is_anonymous and user.is_followed_by(current_user) %}
-                    <a href="/unfollowed_user/{{user.id}}">取消关注</a>
-                    {% else %}
-                    <a href="/followed_user/{{user.id}}">关注此用户</a>
+    {% block navbar %}
+        {{ super() }}
+    {% endblock navbar %}
+    {% block message %}
+        <div class="container" id="flash" style="text-align:center;margin-top:1%">
+            <div class="row clearfix">
+                {% for message in get_flashed_messages(with_categories=True) %}
+                    {% if message[1] != 'Please log in to access this page.' %}
+                        <div class="alert alert-{{ message[0] }}">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            {{ message[1] }}
+                        </div>
                     {% endif %}
-                    <a href="/my_doc/{{user.id}}/1" style="margin-left: 20%;">ta的首页</a></h4>
+                {% endfor %}
             </div>
         </div>
-    </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {% endblock message %}
 
-{% if user_list %}
-<div id="services">
-    <div class="container text-center">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="section-title">
-                    <h2>一共找到了{{length}}个用户!</h2>
-                    <hr>
+    {% block content %}
+        <div class="row" style="margin-top:5%">
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="container">
+                    <div class="form-group" style="float:left">
+                        {{ form.input(class='form-control', style="width:500px;margin-left:20%", maxlength="30",
+                required="required") }}
+                    </div>
+                    <div class="form-group" style="float:right">
+                        {{ form.submit(class="btn btn-default submit", style="height:50px;") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% if hot_user_list %}
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <div class="section-title">
+                            <h2>当红炸子鸡</h2>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+                {% for user in hot_user_list %}
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4" style="width:100%;margin-bottom:20px;">
+                            <div class="service" style="padding-top:0px">
+                                <h1 style="text-align: left"><img src="/show_image/{{ user.id }}"
+                                                                  style="height: 50px;width: 50px">&nbsp;&nbsp;{{ user.username }}
+                                </h1>
+                                <h3 style="text-align: left;margin-top:50px">个人简介</h3>
+                                <h4 class="line-limit-length" style="margin-top: 50px;margin-left: 20%">
+                                    <a>{{ user.about_me }}</a></h4>
+                                <hr style="width: 60%;">
+                                <h4 style="margin-top: 50px;"><a>粉丝数: {{ user.follow_num }} 战斗力</a><a
+                                        style="margin-left: 20%;">文章被收藏数:
+                                    {{ user.collect_num }} 摄氏度</a></h4>
+                                <h4 style="margin-top:50px;">
+                                    {% if not current_user.is_anonymous and user.is_followed_by(current_user) %}
+                                        <a href="/unfollowed_user/{{ user.id }}">取消关注</a>
+                                    {% else %}
+                                        <a href="/followed_user/{{ user.id }}">关注此用户</a>
+                                    {% endif %}
+                                    <a href="/my_doc/{{ user.id }}/1" style="margin-left: 10%;">ta的首页</a>
+                                    <a href="#form{{ user.id }}" id={{ user.id }} onclick="begin(this)"
+                                       style="margin-left: 10%;">发送私信</a></h4>
+
+
+                                <form action="{{ url_for('user.send_info', key=user.id) }}" class="form" method="post"
+                                      id="form{{ user.id }}" style="display: none;margin-top: 20px;">
+
+                                    <div class="row">
+                                        发送私信给{{ user.username }}...
+                                        <a href="#" title="关闭窗口" onclick="close_btn('form{{ user.id }}')">×</a>
+                                    </div>
+                                    <div>
+                                        <textarea style="margin-left:7%;width: 600px;height: 300px;" name="text"
+                                                  placeholder="发送您的信息吧..."></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <input type="submit" href="#div{{ user.id }}"
+                                               id="_submit"/>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if user_list %}
+            <div id="services">
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <div class="section-title">
+                                <h2>一共找到了{{ length }}个用户!</h2>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                    {% for user in user_list %}
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4" style="width:100%;margin-bottom:20px;">
+                                <div class="service" style="padding-top:0px">
+                                    <h1 style="text-align: left"><img src="/show_image/{{ user.id }}"
+                                                                      style="height: 50px;width: 50px">&nbsp;&nbsp;{{ user.username }}
+                                    </h1>
+                                    <h3 style="text-align: left;margin-top:50px">个人简介</h3>
+                                    <span class="fa fa-book fa-3x" style="text-align: left">{{ user.about_me }}</span>
+                                    <h4 style="margin-top: 50px;">粉丝数: {{ user.follow_num }} 战斗力&nbsp;&nbsp;&nbsp;&nbsp;文章被收藏数:
+                                        {{ user.collect_num }} 摄氏度</h4>
+                                    <h4 style="margin-top:50px;">
+                                        {% if not current_user.is_anonymous and user.is_followed_by(current_user) %}
+                                            <a href="/unfollowed_user/{{ user.id }}">取消关注</a>
+                                        {% else %}
+                                            <a href="/followed_user/{{ user.id }}">关注此用户</a>
+                                        {% endif %}<a href="/my_doc/{{ user.id }}/1" style="margin-left: 20%;">ta的首页</a>
+                                        <a href="#form{{ user.id }}" id={{ user.id }} onclick="begin(this)"
+                                           style="margin-left: 10%;">发送私信</a>
+                                    </h4>
+                                    <form action="{{ url_for('user.send_info', key=user.id) }}" class="form"
+                                          method="post"
+                                          id="form{{ user.id }}" style="display: none;margin-top: 20px;">
+
+                                        <div class="row">
+                                            发送私信给{{ user.username }}...
+                                            <a href="#" title="关闭窗口" onclick="close_btn('form{{ user.id }}')">×</a>
+                                        </div>
+                                        <div>
+                                        <textarea style="margin-left:7%;width: 600px;height: 300px;" name="text"
+                                                  placeholder="发送您的信息吧..."></textarea>
+                                        </div>
+                                        <div class="row">
+                                            <input type="submit" href="#div{{ user.id }}"
+                                                   id="_submit"/>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-        {% for user in user_list %}
-        <div class="row">
-            <div class="col-md-4 col-sm-4" style="width:100%;margin-bottom:20px;">
-                <div class="service" style="padding-top:0px">
-                    <h1 style="text-align: left"><img src="/show_image/{{user.id}}"
-                                                      style="height: 50px;width: 50px">&nbsp;&nbsp;{{user.username}}
-                    </h1>
-                    <h3 style="text-align: left;margin-top:50px">个人简介</h3>
-                    <span class="fa fa-book fa-3x" style="text-align: left">{{user.about_me}}</span>
-                    <h4 style="margin-top: 50px;">粉丝数: {{user.follow_num}} 战斗力&nbsp;&nbsp;&nbsp;&nbsp;文章被收藏数:
-                        {{user.collect_num}} 摄氏度</h4>
-                    <h4 style="margin-top:50px;">{% if not current_user.is_anonymous and user.is_followed_by(current_user) %}
-                        <a href="/unfollowed_user/{{user.id}}">取消关注</a>
-                        {% else %}
-                        <a href="/followed_user/{{user.id}}">关注此用户</a>
-                        {% endif %}<a href="/my_doc/{{user.id}}/1" style="margin-left: 20%;">ta的首页</a></h4>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% else %}
+        {% else %}
 
-{% endif %}
+        {% endif %}
 
-{% endblock content %}
+    {% endblock content %}
 
 
-{% block footer %}
-{{super()}}
-{% endblock footer %}
+    {% block footer %}
+        {{ super() }}
+    {% endblock footer %}
 
-{% block content_script %}
-<script>
-    $(document).ready(function () {
-        $(".dropdown").hover(
-            function () {
-                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
-                $(this).toggleClass('open');
-            },
-            function () {
-                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
-                $(this).toggleClass('open');
+    {% block content_script %}
+        <script>
+            $(document).ready(function () {
+                $(".dropdown").hover(
+                    function () {
+                        $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                        $(this).toggleClass('open');
+                    },
+                    function () {
+                        $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                        $(this).toggleClass('open');
+                    }
+                );
+            });
+        </script>
+
+        <script type="text/javascript">
+
+            function begin(self) {
+                var node = document.getElementById("form" + self.id);
+                node.style.display = "block";
+                var form = document.getElementsByClassName("form");
+                for (var f = 0; f < form.length; f++) {
+                    if (form[f].id !== node.id)
+                        form[f].style.display = 'none';
+                }
             }
-        );
-    });
-</script>
-{% endblock content_script %}
+
+            function close_btn(self) {
+                var node = document.getElementById(self);
+                node.style.display = "none";
+            }
+
+        </script>
+    {% endblock content_script %}
 
 {% endblock body %}

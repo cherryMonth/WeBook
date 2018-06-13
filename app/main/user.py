@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from flask import render_template, redirect, flash, url_for, request
+from flask import render_template, redirect, flash, url_for, request, abort
 from flask import Blueprint
 from forms import FindUser
 from models import User, Information
@@ -72,18 +72,21 @@ def unfollowed_user(key):
     return redirect(url_for("user.find_user"))
 
 
-@user.route("/information", methods=['GET', 'POST'])
+@user.route("/information/<int:page>", methods=['GET', 'POST'])
 @login_required
-def information():
-    info_list = Information.query.filter_by(receive_id=current_user.id).all()
+def information(page):
+    temp = Information.query.filter_by(receive_id=current_user.id)
+    info_list = temp.paginate(page, 2, error_out=True).items
+    length = len(temp.all())
+    page_num = length / 2 if length % 2 == 0 else length / 2 + 1
     for index in range(len(info_list)):
         info_list[index].author = User.query.filter_by(id=info_list[index].launch_id).first()
-    return render_template("information.html", info_list=info_list, length=len(info_list))
+    return render_template("information.html", info_list=info_list, length=length, page=page, page_num=page_num)
 
 
-@user.route("/info_confirm/<key>", methods=['GET', 'POST'])
+@user.route("/info_confirm/<int:key>/<int:page>", methods=['GET', 'POST'])
 @login_required
-def confirm(key):
+def confirm(key, page):
     info = Information.query.filter_by(id=key).first()
     if not info:
         flash(u"信息不存在!", "warning")
@@ -96,12 +99,12 @@ def confirm(key):
         flash(u"信息确认成功!", "success")
         db.session.add(info)
         db.session.commit()
-    return redirect(url_for("user.information"))
+    return redirect(url_for("user.information", page=page))
 
 
-@user.route("/del_info/<key>", methods=['GET', 'POST'])
+@user.route("/del_info/<int:key>/<int:page>", methods=['GET', 'POST'])
 @login_required
-def del_info(key):
+def del_info(key, page):
     info = Information.query.filter_by(id=key).first()
     if not info:
         flash(u"信息不存在!", "warning")
@@ -112,7 +115,7 @@ def del_info(key):
         flash(u"信息删除成功!", "success")
         db.session.delete(info)
         db.session.commit()
-    return redirect(url_for("user.information"))
+    return redirect(url_for("user.information", page=page))
 
 
 @user.route("/my_follow", methods=['GET', 'POST'])
@@ -148,3 +151,22 @@ def get_user_info():
         info['collect_num'] = _user.collect_num
         info['email'] = _user.email
     return json.dumps(info)
+
+
+@user.route("/send_info/<int:key>", methods=["POST"])
+@login_required
+def send_info(key):
+
+    info = Information()
+    _user = User.query.filter_by(id=key).first()
+
+    if not _user:
+        abort(404)
+
+    info.launch_id = current_user.id
+    info.receive_id = _user.id
+    info.info = request.form.get('text')
+    db.session.add(info)
+    db.session.commit()
+    flash(u"发送成功!", "success")
+    return redirect(url_for("main.index"))

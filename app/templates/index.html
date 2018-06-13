@@ -52,7 +52,7 @@ function hideURLbar() {
                         <li><a href="{{url_for('main.find_file')}}">发现</a></li>
                         <li><a href="{{url_for('user.find_user')}}">关注</a></li>
                         {% if not current_user.is_anonymous %}
-                        <li style="margin-left:25%"><a href="{{url_for('user.information')}}">消息<span class="badge pull-right">{% if g.message_nums != None %}{{ g.message_nums }}{% endif %}</span></a></li>
+                        <li style="margin-left:25%"><a href="{{url_for('user.information', page=1)}}">消息<span class="badge pull-right">{% if g.message_nums != None %}{{ g.message_nums }}{% endif %}</span></a></li>
                         <li><a href="{{url_for('main.edit')}}">写文章</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
