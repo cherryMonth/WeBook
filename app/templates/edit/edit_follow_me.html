@@ -2,63 +2,6 @@
 
 {% block title %}关注我的人{% endblock %}
 
-{% block styles %}
-    {{ super() }}
-    <style>
-        .mask {
-            margin: 0;
-            padding: 0;
-            border: none;
-            width: 100%;
-            height: 100%;
-            background: #333;
-            opacity: 0.6;
-            filter: alpha(opacity=60);
-            z-index: 9999;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: none;
-        }
-
-        .form {
-            position: absolute;
-            left: 12%;
-            background: white;
-            width: 700px;
-            height: 500px;
-            border: 3px solid #444;
-            margin-left: 20%;
-            border-radius: 7px;
-            z-index: 10000;
-            display: none;
-        }
-
-        .row1 {
-            background: #f7f7f7;
-            padding: 0px 20px;
-            line-height: 50px;
-            height: 50px;
-            font-weight: bold;
-            color: #666;
-            font-size: 20px;
-        }
-
-        #_submit {
-            color: White;
-            background: #4490f7;
-            text-decoration: none;
-            margin-left: 35%;
-            padding: 10px 95px;
-            margin-top: 40px;
-            border-radius: 5px;
-            opacity: 0.8;
-            filter: alpha(opacity=80);
-        }
-
-    </style>
-{% endblock %}
-
 {% block content %}
     <div class="main" style="margin-left:15%;width:300px; overflow-y:scroll">
         <ul class="nav">
@@ -87,49 +30,10 @@
                     {% else %}
                         <a href="/followed_user/{{ user.id }}">关注此用户</a>
                     {% endif %}
-                    <a href="/my_doc/{{ user.id }}/1" style="margin-left: 10%">ta的首页</a>
-                    <a href="#form{{ user.id }}" id={{ user.id }} onclick="begin(this)" style="margin-left: 10%">发送私信</a></h4>
-                </h4>
-
-
-
-                <form action="{{ url_for('user.send_info', key=user.id) }}" class="form" method="post"
-                      id="form{{ user.id }}" style="display: none;margin-top: 20px;">
-
-                    <div class="row1">
-                        发送私信给{{ user.username }}...
-                        <a href="#" style="margin-left:70%" title="关闭窗口"
-                           onclick="close_btn('form{{ user.id }}')">×</a>
-                    </div>
-                    <div>
-                                        <textarea style="width: 600px;height: 300px;margin-left:7%" name="text"
-                                                  placeholder="发送您的信息吧..."></textarea>
-                    </div>
-                    <div class="row">
-                        <input type="submit" id="_submit" class="submit"/>
-                    </div>
-                </form>
+                    <a href="/my_doc/{{ user.id }}/1" style="margin-left: 10%">ta的首页</a></h4>
             </div>
         {% endfor %}
 
-        <script type="text/javascript">
 
-            function begin(self) {
-                $("body").append("<div id='mask'></div>");
-                $("#mask").addClass("mask").fadeIn("slow");
-                $("#form" + self.id).fadeIn("slow");
-                var form = document.getElementsByClassName("form");
-                for (var f = 0; f < form.length; f++) {
-                    if (form[f].id !== "form" + self.id)
-                        form[f].style.display = 'none';
-                }
-            }
-
-            function close_btn(self) {
-                $("#" + self).fadeOut("fast");
-                $("#mask").css({display: 'none'});
-            }
-
-        </script>
     </div>
 {% endblock content %}
