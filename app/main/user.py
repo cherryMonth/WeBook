@@ -145,7 +145,7 @@ def get_user_info():
         # 对象的序列化为字典 info.update(_user.__dict__)
         info['username'] = _user.username
         info['follow_num'] = _user.follow_num
-        info['image_name'] = "http://cherrymonth.top:5000/show_image/{}".format(_user.id)
+        info['image_name'] = "https://cherrymonth.top/show_image/{}".format(_user.id)
         info['about_me'] = _user.about_me
         info['id'] = _user.id
         info['collect_num'] = _user.collect_num

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from flask import render_template, redirect, flash, url_for, request
+from flask import send_from_directory, render_template, redirect, flash, url_for, request
 from flask import Blueprint, current_app, session
 from werkzeug.utils import secure_filename
 from flask_login import login_user, logout_user, login_required, current_user
