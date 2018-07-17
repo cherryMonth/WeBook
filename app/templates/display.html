@@ -75,7 +75,14 @@
         </thead>
         <tbody>
         {% for comment in comments %}
-            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;{{comment.author}}</td>
+            {% if comment.comment_user %}
+            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
+                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a> 回复
+                <a href="/my_doc/{{ comment.comment_id }}/1" style="color: blue;">{{ comment.comment_user }}</a>:</td>
+            {% else %}
+            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
+               <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
+            {% endif %}
             <td style="color:black" >{{comment.body|markdown}}</td>
             <td style="color:black">{{comment.timestamp}}</td>
             <td style="color:black">{{comment.html|safe}}</td>
@@ -112,6 +119,15 @@
                 btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
                 var form = document.getElementById("form")
                 form.setAttribute("action", "/edit_comment/"+key)
+            }
+
+            function response_comment(key) {
+                var handler = document.getElementById("addcomment");
+                handler.setAttribute("style", "margin-top:20px;");
+                var btn = document.getElementById("remove");
+                btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
+                var form = document.getElementById("form");
+                form.setAttribute("action", "/response_comment/{{ post.id }}/"+key);
             }
 
         </script>
@@ -167,11 +183,11 @@
     $(document).ready(function () {
         $(".dropdown").hover(
             function () {
-                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $('.dropdown-menu', this).stop(true).slideDown("fast");
                 $(this).toggleClass('open');
             },
             function () {
-                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $('.dropdown-menu', this).stop(true).slideUp("fast");
                 $(this).toggleClass('open');
             }
         );
