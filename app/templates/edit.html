@@ -1,9 +1,9 @@
 {% extends "index.html" %}
 {% block metas %}
-{{super()}}
+    {{ super() }}
 {% endblock metas %}
 {% block styles %}
-{{super()}}
+    {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
     <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
@@ -15,68 +15,68 @@
 {% block body %}
 
     {% block navbar %}
-    {{super()}}
+        {{ super() }}
     {% endblock navbar %}
-{% block message %}
-                <div class="container" id="flash" style="text-align:center;margin-top:1%">
-                    <div class="row clearfix">
-                        {% for message in get_flashed_messages(with_categories=True) %}
-						{% if message[1] != 'Please log in to access this page.' %}
-                            <div class="alert alert-{{ message[0] }}">
-                                <button type="button" class="close" data-dismiss="alert">&times;</button>
-								{{ message[1] }}
-                            </div>
-						{% endif %}
-                        {% endfor %}
+    {% block message %}
+        <div class="container" id="flash" style="text-align:center;margin-top:1%">
+            <div class="row clearfix">
+                {% for message in get_flashed_messages(with_categories=True) %}
+                    {% if message[1] != 'Please log in to access this page.' %}
+                        <div class="alert alert-{{ message[0] }}">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            {{ message[1] }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endblock message %}
+
+    {% block content %}
+        <div class="row" style="margin-top:5%" onsubmit="return get_html()">
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="container">
+                    <div class="form-group" style="float:left">
+                        {{ form.title(class='form-control', style="width:250%;height:50px;font-size:20px;", maxlength="30", required="required") }}
+                    </div>
+                    <div class="form-group" style="float:right">
+                        {{ form.submit(class="btn btn-default submit", style="height:50px") }}
                     </div>
                 </div>
-{% endblock message %}
 
-{% block content %}
-    <div class="row" style="margin-top:5%" onsubmit="return get_html()">
-        <form method="post">
-            {{ form.hidden_tag() }}
-            <div class="container" >
-                <div class="form-group" style="float:left">
-                    {{ form.title(class='form-control', style="width:250%;height:50px;font-size:20px;", maxlength="30", required="required") }}
+                <div class="form-group">
+                    {{ form.text.label(style="margin-left:48%;margin-top:30px;font-size:40px;") }}
+                    <div id="editormd" class="form-control">
+                        {{ form.text(style="display:none;") }}
+                    </div>
                 </div>
-                <div class="form-group" style="float:right">
-                     {{ form.submit(class="btn btn-default submit", style="height:50px") }}
-                </div>
-            </div>
+            </form>
+        </div>
+    {% endblock content %}
 
-            <div class="form-group">
-                {{ form.text.label(style="margin-left:48%;margin-top:30px;font-size:40px;") }}
-                <div id="editormd" class="form-control">
-                    {{ form.text(style="display:none;") }}
-                </div>
-            </div>
-        </form>
-    </div>
-{% endblock content %}
+    {% block footer %}
+        {{ super() }}
+    {% endblock footer %}
 
-{% block footer %}
-{{super()}}
-{% endblock footer %}
+    {% block content_script %}
+        <script>
+            $(document).ready(function () {
+                $(".dropdown").hover(
+                    function () {
+                        $('.dropdown-menu', this).stop(true).slideDown("fast");
+                        $(this).toggleClass('open');
+                    },
+                    function () {
+                        $('.dropdown-menu', this).stop(true).slideUp("fast");
+                        $(this).toggleClass('open');
+                    }
+                );
+            });
+        </script>
+    {% endblock content_script %}
 
-{% block content_script %}
-             <script>
-				$(document).ready(function(){
-					$(".dropdown").hover(
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideDown("fast");
-							$(this).toggleClass('open');
-						},
-						function() {
-							$('.dropdown-menu', this).stop( true, true ).slideUp("fast");
-							$(this).toggleClass('open');
-						}
-					);
-				});
-			</script>
-{% endblock content_script %}
-
-{%  endblock body %}
+{% endblock body %}
 
 {% block js %}
     <script src="{{ url_for('static',filename='editormd/editormd.min.js') }}"></script>
@@ -88,67 +88,64 @@
             testEditor = editormd("editormd", {
                 width: "90%",  // 长度
                 height: "700px",  // 宽度
-                theme : "default", // 主题
-                 previewTheme : "default",
-                editorTheme : "base16-light",
-                searchReplace : true,
+                theme: "default", // 主题
+                previewTheme: "default",
+                editorTheme: "base16-light",
+                searchReplace: true,
                 syncScrolling: "single",  // 保存 HTML 到 Textarea
-                 emoji : true,
-                        taskList : true,
-                        tocm            : true,         // Using [TOCM]
-                        tex : true,                   // 开启科学公式TeX语言支持，默认关闭
-                        flowChart : true,             // 开启流程图支持，默认关闭
-                        sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+                emoji: true,
+                taskList: true,
+                tocm: true,         // Using [TOCM]
+                tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+                flowChart: true,             // 开启流程图支持，默认关闭
+                sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
 
-                searchReplace : "true",
+                searchReplace: "true",
                 path: "{{ url_for('static',filename='editormd/lib/') }}"
             });
         });
 
-            $(document).ready(function () {  // 添加了判断 当点击提交时若有内容则不需要提示用户是否保存 当不点击提交跳转其他页面时提示
+        $(document).ready(function () {  // 添加了判断 当点击提交时若有内容则不需要提示用户是否保存 当不点击提交跳转其他页面时提示
             $("#submit").click(function () {
-            if ($(this).attr("done") === undefined) {
-            $(this).attr("done", "true");
-            return;
-            }
+                if ($(this).attr("done") === undefined) {
+                    $(this).attr("done", "true");
+                    return;
+                }
             })
-            })
+        })
 
-            window.onbeforeunload = function confirmExit(){
+        window.onbeforeunload = function confirmExit() {
             var handler = document.getElementById("text").value;
             var title = document.getElementById("title").value;
-            if(handler.length > 0 || title.length > 0 )
-            {
-                if($("#submit").attr("done") === undefined){
-                return "Are you want exit?"
+            if (handler.length > 0 || title.length > 0) {
+                if ($("#submit").attr("done") === undefined) {
+                    return "Are you want exit?"
                 }
-                else{
-                return null;
+                else {
+                    return null;
                 }
             }
-            else
-            {
+            else {
                 return null;
             }
+        }
+
+        function get_html() {
+
+            var Code = document.getElementById("text").value;
+
+            if (Code.length === 0) {
+                alert("您输入正文的内容为空，无法提交!");
+                return false;
             }
 
-            function get_html() {
+            else if (Code.length > 100000) {
+                alert('文档文本内容总长度为' + Code.length + '，当前最多只能存储为10000字，无法保存！');
+                return false;
+            }
 
-                 var Code = document.getElementById("text").value;
-
-                 if(Code.length === 0)
-                 {
-                        alert("您输入正文的内容为空，无法提交!");
-                        return false;
-                 }
-
-                 else if (Code.length > 100000){
-                 alert('文档文本内容总长度为' + Code.length + '，当前最多只能存储为10000字，无法保存！');
-                  return false;
-                 }
-
-                return true;
-                }
+            return true;
+        }
 
     </script>
 {% endblock js %}

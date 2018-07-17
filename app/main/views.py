@@ -150,24 +150,32 @@ def dispaly(key):
 
     for _index in range(len(comments)):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
-        comments[_index].img = User.query.filter_by(id=comments[_index].author_id).first().id
-        if current_user.is_anonymous:
+        comments[_index].img = comments[_index].author_id
+        if comments[_index].comment_user:
+            comments[_index].comment_id = User.query.filter_by(username=comments[_index].comment_user).first().id
+        string = ""
+
+        if not current_user.is_authenticated:
             comments[_index].html = ""
+            continue
 
         elif comments[_index].author_id == current_user.id:
             string = u'''
-            <li><a onclick="edit_comment({})">修改</a></li>
+            <li><a href='#' onclick="edit_comment({})">修改</a></li>
             <li><a href="/del_comment/{}">删除</a></li>
-            '''.format(comments[_index].id, comments[_index].id)
-            comments[_index].html = html.format(string)
-        elif permission >= 31 or current_user.id == p.user:
-            string = u'''
-                         <li><a href="/del_comment/{}">删除</a></li>
-                        '''.format(comments[_index].id)
-            comments[_index].html = html.format(string)
+            <li><a href='#' onclick="response_comment('{}')">回复</a></li>
+            '''.format(comments[_index].id, comments[_index].id, comments[_index].author)
 
-        else:  # 普通用户无权限操作comments
-            comments[_index].html = ""
+        elif permission >= 31 or current_user.id == p.user:
+            string = u'''<li><a href='#' onclick="response_comment('{}')">回复</a></li>
+                         <li><a href="/del_comment/{}">删除</a></li>
+                        '''.format(comments[_index].author, comments[_index].id)
+
+        else:
+            string = u'''<li><a href='#' onclick="response_comment('{}')">回复</a></li>
+                                    '''.format(comments[_index].author)
+
+        comments[_index].html = html.format(string)
 
     return render_template("display.html",  post=p, is_collect=is_collect, comments=comments)
 
@@ -488,12 +496,9 @@ def edit_password():
 
 
 @main.route("/add_comment/<key>", methods=["POST"])
+@login_required
 def add_comment(key):
     if request.method == "POST":
-        if current_user.is_anonymous:
-            flash(u"您尚未登录无法评论", "warning")
-            return redirect("/display/" + key)
-
         info = request.form["comment"]
         if not Category.query.filter_by(id=key).first():
             abort(404)
@@ -535,6 +540,33 @@ def edit_comment(key):
         db.session.commit()
         flash(u"修改成功!", "success")
         return redirect("/display/" + str(comment.post_id))
+
+
+@main.route("/response_comment/<int:post_id>/<key>", methods=["POST"])
+@login_required
+def response_comment(post_id, key):
+    if request.method == "POST":
+        info = request.form["comment"]
+        if not Category.query.filter_by(id=post_id).first():
+            abort(404)
+        comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=post_id)
+        comment.comment_user = User.query.filter_by(username=key).first()
+        if not comment.comment_user:
+            abort(404)
+        _info = Information()
+        _info.time = datetime.datetime.now()
+        _info.launch_id = current_user.id
+        category = Category.query.filter_by(id=post_id).first()
+        _info.receive_id = comment.comment_user.id
+        comment.comment_user = comment.comment_user.username
+        comment.timestamp = datetime.datetime.now()
+        _info.info = u"用户" + current_user.username + u" 对您在" + u"<a style='color: #d82433' " \
+            u"href='{}'>{}</a>".format(u"/display/"+str(category.id), category.title) + u"的评论进行了回复!"
+        db.session.add(_info)
+        db.session.add(comment)
+        db.session.commit()
+        flash(u"回复成功!", "success")
+        return redirect("/display/" + str(post_id))
 
 
 @main.route("/del_comment/<key>", methods=['GET', 'POST'])
