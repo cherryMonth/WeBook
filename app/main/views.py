@@ -161,18 +161,18 @@ def dispaly(key):
 
         elif comments[_index].author_id == current_user.id:
             string = u'''
-            <li><a href='#' onclick="edit_comment({})">修改</a></li>
+            <li><a  onclick="edit_comment({})">修改</a></li>
             <li><a href="/del_comment/{}">删除</a></li>
-            <li><a href='#' onclick="response_comment('{}')">回复</a></li>
+            <li><a  onclick="response_comment('{}')">回复</a></li>
             '''.format(comments[_index].id, comments[_index].id, comments[_index].author)
 
         elif permission >= 31 or current_user.id == p.user:
-            string = u'''<li><a href='#' onclick="response_comment('{}')">回复</a></li>
+            string = u'''<li><a  onclick="response_comment('{}')">回复</a></li>
                          <li><a href="/del_comment/{}">删除</a></li>
                         '''.format(comments[_index].author, comments[_index].id)
 
         else:
-            string = u'''<li><a href='#' onclick="response_comment('{}')">回复</a></li>
+            string = u'''<li><a  onclick="response_comment('{}')">回复</a></li>
                                     '''.format(comments[_index].author)
 
         comments[_index].html = html.format(string)
