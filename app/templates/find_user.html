@@ -175,7 +175,8 @@
                                                                       style="height: 50px;width: 50px">&nbsp;&nbsp;{{ user.username }}
                                     </h1>
                                     <h3 style="text-align: left;margin-top:50px">个人简介</h3>
-                                    <span class="fa fa-book fa-3x" style="text-align: left">{{ user.about_me }}</span>
+                                    <h4 class="line-limit-length" style="margin-top: 50px;margin-left: 20%">
+                                    <a>{{ user.about_me }}</a></h4>
                                     <hr style="width: 60%;">
                                     <h4 style="margin-top: 50px;">粉丝数: {{ user.follow_num }} 战斗力&nbsp;&nbsp;&nbsp;&nbsp;文章被收藏数:
                                         {{ user.collect_num }} 摄氏度</h4>
