@@ -3,31 +3,37 @@
 {% block title %}关注我的人{% endblock %}
 
 {% block content %}
-        <div class="main" style="margin-left:15%;width:300px; overflow-y:scroll">
-                <ul class="nav">
-                    <li><a href="{{url_for('main.edit_basic')}}">修改基础信息</a></li>
-                    <li><a  href="{{url_for('main.edit_password')}}">修改密码</a></li>
-                    <li><a href="{{url_for('main.edit_email')}}">解绑邮箱</a></li>
-                    <li><a href="{{url_for('user.my_follow')}}">我关注的人</a></li>
-                    <li><a style="color: #c59a6d"  href="{{url_for('user.follow_me')}}">关注我的人</a></li>
-                </ul>
-            </div>
-			<div class="main" style="margin-left:10%;overflow-y:scroll;width: 800px;">
-    {% for user in user_list %}
-    <div class="main" style="margin-left:10%;height: 500px; width:600px; border-style: outset;">
-        <h3><img src="/show_image/{{user.id}}" style="width: 50px;height: 50px;margin-right: 50px;">{{user.username}}</h3>
-        <h3 style="text-align: left;margin-top:50px">个性简介</h3>
-                <h4 style="margin-top: 50px;text-align: center"  class="line-limit-length"><a>{{user.about_me}}</a></h4>
-                <hr style="width: 60%;">
-                <h4 style="margin-top: 50px;text-align: center"><a>粉丝数: {{user.follow_num}} 战斗力</a><a style="margin-left: 20%;">文章被收藏数:
-                    {{user.collect_num}} 摄氏度</a></h4>
-                <h4 style="margin-top:50px;text-align: center">{% if not current_user.is_anonymous and user.is_followed_by(current_user) %}
-                    <a href="/unfollowed_user/{{user.id}}">取消关注</a>
-                    {% else %}
-                    <a href="/followed_user/{{user.id}}">关注此用户</a>
-                    {% endif %}
-                    <a href="/my_doc/{{user.id}}" style="margin-left: 20%;">ta的首页</a></h4>
+    <div class="main" style="margin-left:15%;width:300px; overflow-y:scroll">
+        <ul class="nav">
+            <li><a href="{{ url_for('main.edit_basic') }}">修改基础信息</a></li>
+            <li><a href="{{ url_for('main.edit_password') }}">修改密码</a></li>
+            <li><a href="{{ url_for('main.edit_email') }}">解绑邮箱</a></li>
+            <li><a href="{{ url_for('user.my_follow') }}">我关注的人</a></li>
+            <li><a style="color: #c59a6d" href="{{ url_for('user.follow_me') }}">关注我的人</a></li>
+        </ul>
     </div>
-    {% endfor %}
+    <div class="main" style="margin-left:10%;overflow-y:scroll;width: 800px;">
+        {% for user in user_list %}
+            <div class="main" style="margin-left:10%;height: 500px; width:600px; border-style: outset;">
+                <h3><img src="/show_image/{{ user.id }}"
+                         style="width: 50px;height: 50px;margin-right: 50px;">{{ user.username }}</h3>
+                <h3 style="text-align: left;margin-top:50px">个性简介</h3>
+                <h4 style="margin-top: 50px;text-align: center" class="line-limit-length"><a>{{ user.about_me }}</a>
+                </h4>
+                <hr style="width: 60%;">
+                <h4 style="margin-top: 50px;text-align: center"><a>粉丝数: {{ user.follow_num }} 战斗力</a><a
+                        style="margin-left: 20%;">文章被收藏数:
+                    {{ user.collect_num }} 摄氏度</a></h4>
+                <h4 style="margin-top:50px;text-align: center">
+                    {% if not current_user.is_anonymous and user.is_followed_by(current_user) %}
+                        <a href="/unfollowed_user/{{ user.id }}">取消关注</a>
+                    {% else %}
+                        <a href="/followed_user/{{ user.id }}">关注此用户</a>
+                    {% endif %}
+                    <a href="/my_doc/{{ user.id }}/1" style="margin-left: 10%">ta的首页</a></h4>
             </div>
+        {% endfor %}
+
+
+    </div>
 {% endblock content %}

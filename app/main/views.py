@@ -32,6 +32,7 @@ def pop(args):
 
 
 def work(_id, info):
+    print _id + "begin work"
     name = _id + ".md"
     pdf = _id + ".pdf"
     filename = file_dir + "/" + name
@@ -69,7 +70,7 @@ def work(_id, info):
         _file.write(tmp + "\n")
     _file.close()
     user_page[_id] = 'work'
-    IOLoop.instance().add_timeout(50, callback=pop, args=(_id,))
+    IOLoop.instance().add_timeout(50, callback=pop, args=(_id, ))
     os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
               "--highlight-style pygments --listings ".format(filename, pdf_name))
 
@@ -96,8 +97,6 @@ def edit():
         t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
         t.start()
         db.session.commit()
-        t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
-        t.start()
 
         flash(u'保存成功！', 'success')
         return redirect(url_for('main.edit'))
@@ -109,11 +108,14 @@ def index():
     return render_template("index.html")
 
 
-@main.route("/my_doc/<key>", methods=['GET', "POST"])
-def my_doc(key):
-    docs = Category.query.filter_by(user=key).all()
-    length = len(docs)
-    return render_template("mydoc.html", length=length, docs=docs)
+@main.route("/my_doc/<int:key>/<int:_id>", methods=['GET', "POST"])
+def my_doc(key, _id):
+    temp = Category.query.filter_by(user=key)
+    docs = temp.paginate(_id, 10, error_out=True).items
+    length = len(temp.all())
+    page_num = length / 10 if length % 10 == 0 else length / 10 + 1
+    # 总数量 文章列表 当前id 总页数
+    return render_template("mydoc.html", key=key, length=length, docs=docs, page=_id, page_num=page_num)
 
 
 @main.route("/display/<key>", methods=['GET', "POST"])
@@ -148,24 +150,32 @@ def dispaly(key):
 
     for _index in range(len(comments)):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
-        comments[_index].img = User.query.filter_by(id=comments[_index].author_id).first().id
-        if current_user.is_anonymous:
+        comments[_index].img = comments[_index].author_id
+        if comments[_index].comment_user:
+            comments[_index].comment_id = User.query.filter_by(username=comments[_index].comment_user).first().id
+        string = ""
+
+        if not current_user.is_authenticated:
             comments[_index].html = ""
+            continue
 
         elif comments[_index].author_id == current_user.id:
             string = u'''
-            <li><a onclick="edit_comment({})">修改</a></li>
+            <li><a  onclick="edit_comment({})">修改</a></li>
             <li><a href="/del_comment/{}">删除</a></li>
-            '''.format(comments[_index].id, comments[_index].id)
-            comments[_index].html = html.format(string)
-        elif permission >= 31 or current_user.id == p.user:
-            string = u'''
-                         <li><a href="/del_comment/{}">删除</a></li>
-                        '''.format(comments[_index].id)
-            comments[_index].html = html.format(string)
+            <li><a  onclick="response_comment('{}')">回复</a></li>
+            '''.format(comments[_index].id, comments[_index].id, comments[_index].author)
 
-        else:  # 普通用户无权限操作comments
-            comments[_index].html = ""
+        elif permission >= 31 or current_user.id == p.user:
+            string = u'''<li><a  onclick="response_comment('{}')">回复</a></li>
+                         <li><a href="/del_comment/{}">删除</a></li>
+                        '''.format(comments[_index].author, comments[_index].id)
+
+        else:
+            string = u'''<li><a  onclick="response_comment('{}')">回复</a></li>
+                                    '''.format(comments[_index].author)
+
+        comments[_index].html = html.format(string)
 
     return render_template("display.html",  post=p, is_collect=is_collect, comments=comments)
 
@@ -211,9 +221,9 @@ def show_collect():
     return render_template("collect.html", doc_list=doc_list, length=len(doc_list))
 
 
-@main.route("/del_file/<key>", methods=['GET', "POST"])
+@main.route("/del_file/<int:key>/<int:page>", methods=['GET', "POST"])
 @login_required
-def del_file(key):
+def del_file(key, page):
     p = Category.query.filter_by(id=key, user=current_user.id).first()
     if not p:
         flash(u'该文章不存在！', 'warning')
@@ -226,7 +236,7 @@ def del_file(key):
     db.session.delete(p)
     db.session.commit()
     flash(u'删除成功！', 'success')
-    return redirect("/my_doc/"+str(current_user.id))
+    return redirect(url_for("main.my_doc", key=current_user.id, _id=page))
 
 """
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
@@ -243,6 +253,7 @@ def collect(key):
         abort(404)
     f = Favorite()
     f.favorite_id = current_user.id
+    f.update_time = datetime.datetime.now()
     f.favorited_id = key
     p.collect_num += 1
     user.collect_num += 1
@@ -259,7 +270,7 @@ def collect(key):
     return redirect("/display/" + key)
 
 
-@main.route("/edit_file/<key>", methods=['GET', "POST"])
+@main.route("/edit_file/<int:key>", methods=['GET', "POST"])
 @login_required
 def edit_file(key):
     p = Category.query.filter_by(id=key, user=current_user.id).first()
@@ -299,6 +310,8 @@ def downloader(key):
 
     popen = None
     if not user_page. has_key(str(p.id)):
+        user_page[str(p.id)] = 'work'
+        print str(p.id) + "begin work"
         info = p.content.encode("utf-8")
         name = str(p.id) + ".md"
         pdf = str(p.id) + ".pdf"
@@ -353,7 +366,8 @@ def downloader(key):
 
         elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
-            return redirect("/my_doc/" + str(current_user.id))
+            IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
+            return redirect(url_for("main.my_doc", key=current_user.id, _id=1))
         else:
             if popen and popen.poll() is None:
                 line = popen.stdout.readline()
@@ -362,7 +376,8 @@ def downloader(key):
                 if 'Error' in line or 'Warning' in line or "Could not" in line or 'WARNING' in line:
                     popen.terminate()
                     flash(u'导出失败, {}'.format(line), 'warning')
-                    return redirect("/my_doc/" + str(current_user.id))
+                    IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
+                    return redirect(url_for("main.my_doc", key=current_user.id, _id=1))
             count += 1
             time.sleep(1)
 
@@ -481,17 +496,16 @@ def edit_password():
 
 
 @main.route("/add_comment/<key>", methods=["POST"])
+@login_required
 def add_comment(key):
     if request.method == "POST":
-        if current_user.is_anonymous:
-            flash(u"您尚未登录无法评论", "warning")
-            return redirect("/display/" + key)
-
         info = request.form["comment"]
         if not Category.query.filter_by(id=key).first():
             abort(404)
         comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=key)
+        comment.timestamp = datetime.datetime.now()
         _info = Information()
+        _info.time = datetime.datetime.now()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
@@ -514,6 +528,7 @@ def edit_comment(key):
             abort(404)
         comment.body = info
         _info = Information()
+        _info.time = datetime.datetime.now()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user
@@ -525,6 +540,33 @@ def edit_comment(key):
         db.session.commit()
         flash(u"修改成功!", "success")
         return redirect("/display/" + str(comment.post_id))
+
+
+@main.route("/response_comment/<int:post_id>/<key>", methods=["POST"])
+@login_required
+def response_comment(post_id, key):
+    if request.method == "POST":
+        info = request.form["comment"]
+        if not Category.query.filter_by(id=post_id).first():
+            abort(404)
+        comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=post_id)
+        comment.comment_user = User.query.filter_by(username=key).first()
+        if not comment.comment_user:
+            abort(404)
+        _info = Information()
+        _info.time = datetime.datetime.now()
+        _info.launch_id = current_user.id
+        category = Category.query.filter_by(id=post_id).first()
+        _info.receive_id = comment.comment_user.id
+        comment.comment_user = comment.comment_user.username
+        comment.timestamp = datetime.datetime.now()
+        _info.info = u"用户" + current_user.username + u" 对您在" + u"<a style='color: #d82433' " \
+            u"href='{}'>{}</a>".format(u"/display/"+str(category.id), category.title) + u"的评论进行了回复!"
+        db.session.add(_info)
+        db.session.add(comment)
+        db.session.commit()
+        flash(u"回复成功!", "success")
+        return redirect("/display/" + str(post_id))
 
 
 @main.route("/del_comment/<key>", methods=['GET', 'POST'])

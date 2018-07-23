@@ -4,7 +4,9 @@
 {%block title %}We Book {% endblock %}
 
 {% block metas %}
-<meta name="description" content="La casa free real state fully responsive html5/css3 home page website template"/>
+<link rel="shortcut icon" href="/static/favicon.ico" />
+<link rel="bookmark" href="/static/favicon.ico"/>
+<meta name="description" content="WeBook是一个优质的创作社区，在这里，你可以任性地创作，一篇短文、一张照片、一首诗、一幅画……我们相信，每个人都是生活中的艺术家，有着无穷的创造力。"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"/>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 {% endblock metas %}
@@ -52,7 +54,7 @@ function hideURLbar() {
                         <li><a href="{{url_for('main.find_file')}}">发现</a></li>
                         <li><a href="{{url_for('user.find_user')}}">关注</a></li>
                         {% if not current_user.is_anonymous %}
-                        <li style="margin-left:25%"><a href="{{url_for('user.information')}}">消息<span class="badge pull-right">{% if g.message_nums != None %}{{ g.message_nums }}{% endif %}</span></a></li>
+                        <li style="margin-left:25%"><a href="{{url_for('user.information', page=1)}}">消息<span class="badge pull-right">{% if g.message_nums != None %}{{ g.message_nums }}{% endif %}</span></a></li>
                         <li><a href="{{url_for('main.edit')}}">写文章</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -62,7 +64,7 @@ function hideURLbar() {
                                 <li>
                                     <div class="col-sm-4">
                                         <ul class="multi-column-dropdown">
-                                            <li><a href="/my_doc/{{current_user.id}}">我的文章</a></li>
+                                            <li><a href="/my_doc/{{current_user.id}}/1">我的文章</a></li>
                                             <li><a href="{{url_for('main.show_collect')}}">收藏的文章</a></li>
                                             <li><a href="{{url_for('main.edit_basic')}}">设置</a></li>
                                         </ul>
@@ -211,11 +213,11 @@ function hideURLbar() {
     $(document).ready(function () {
         $(".dropdown").hover(
             function () {
-                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $('.dropdown-menu', this).stop(true).slideDown("fast");
                 $(this).toggleClass('open');
             },
             function () {
-                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $('.dropdown-menu', this).stop(true).slideUp("fast");
                 $(this).toggleClass('open');
             }
         );
@@ -249,7 +251,7 @@ function hideURLbar() {
                     <li><a href="http://facebook.com" class="facebook" target="_blank"></a></li>
                     <li><a href="http://twitter.com" class="twitter" target="_blank"></a></li>
                     <li><a href="http://plus.google.com" class="google" target="_blank"></a></li>
-                    <li><a href="http://www.block1b.cn:5000" class="skype"></a></li>
+                    <li><a href="http://www.block1b.cn" class="skype" target="_blank"></a></li>
                 </ul>
             </li>
         </ul>

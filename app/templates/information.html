@@ -45,16 +45,16 @@
         {% for info in info_list %}
         <tr id="{{info_list.index(info) + 1}}">
             <td style="word-wrap:break-word;">
-                    <img src="/show_image/{{info.launch_id}}" style="height: 30px;width: 30px">&nbsp;{{info.author.username}}
+                    <img src="/show_image/{{info['launch_id']}}" style="height: 30px;width: 30px">&nbsp;{{info['author'].username}}
             </td>
             <td style="color: black;word-wrap:break-word;">
-                {{ info.info | safe}}
+                {{ info['info'] | safe}}
             </td>
             <td style="color: black;word-wrap:break-word;">
-                {{ info.time }}
+                {{ info['time'] }}
             </td>
             <td style="color: black;word-wrap:break-word;">
-                {% if info.confirm == True %}
+                {% if info['confirm'] == True %}
                 已查看
                 {% else %}
                  未查看
@@ -62,14 +62,33 @@
             </td>
             <td style="word-wrap:break-word;">
                 {% if info.confirm != True %}
-                <a href='/info_confirm/{{info.id}}'>标记为已查看</a>
+                <a href='/info_confirm/{{info['id']}}/{{ page }}'>标记为已查看</a>
                 {% endif %}
-                <a href='/del_info/{{info.id}}' style="margin-left: 5%">删除</a>
+                <a href='/del_info/{{info['id']}}/{{ page }}' style="margin-left: 5%">删除</a>
             </td>
         </tr>
         {% endfor %}
     </table>
-    <div style="margin-left:40%;margin-top:5%" id="barcon" name="barcon"></div>
+    <div style="margin-left:30%;margin-top:5%" id="barcon">
+                    {% if page == 1 %}
+                        <a href="{{ url_for('user.information', page=page) }}">&lt;上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                    {% else %}
+                        <a href="{{ url_for('user.information', page=page - 1) }}">&lt;上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                    {% endif %}
+                    {% for index in range(1, page_num + 1) %}
+                        {% if index == page %}
+                            <a style="color: #c59a6d;font-weight:bold;"
+                               href="{{ url_for('user.information', page=index) }}">{{ index }}&nbsp;&nbsp;&nbsp;</a>
+                        {% else %}
+                            <a href="{{ url_for('user.information', page=index) }}">{{ index }}&nbsp;&nbsp;&nbsp;</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page == page_num %}
+                        <a href="{{ url_for('user.information', page=page) }}">下一页&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                    {% else %}
+                        <a href="{{ url_for('user.information', page=page + 1) }}">下一页&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                    {% endif %}
+                </div>
     {% else %}
     <h3>好遗憾啊,当前还没有与您有关的消息。</h3>
     {% endif %}
@@ -85,11 +104,11 @@
     $(document).ready(function () {
         $(".dropdown").hover(
             function () {
-                $('.dropdown-menu', this).stop(true, true).slideDown("fast");
+                $('.dropdown-menu', this).stop(true).slideDown("fast");
                 $(this).toggleClass('open');
             },
             function () {
-                $('.dropdown-menu', this).stop(true, true).slideUp("fast");
+                $('.dropdown-menu', this).stop(true).slideUp("fast");
                 $(this).toggleClass('open');
             }
         );
