@@ -27,6 +27,7 @@ user_page = dict()
 
 
 def pop(args):
+    print str(args[0]) + "has pop!"
     user_page.pop(args[0], None)
 
 
@@ -68,9 +69,9 @@ def work(_id, info):
         _file.write(tmp + "\n")
     _file.close()
     user_page[_id] = 'work'
+    IOLoop.instance().add_timeout(50, callback=pop, args=(_id,))
     os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
               "--highlight-style pygments --listings ".format(filename, pdf_name))
-    IOLoop.instance().add_timeout(50, callback=pop, args=(_id, ))
 
 
 @main.route("/create_doc", methods=['GET', "POST"])
