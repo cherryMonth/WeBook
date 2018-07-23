@@ -4,7 +4,7 @@ Welcome to WeBook!
 
 To confirm your account please click on the following link:
 
-{{ url_for('auth.login_by_mail', token=token, _external=True) }}
+https://cherrymonth.top/login_by_email/{{token}}
 
 Sincerely,
 

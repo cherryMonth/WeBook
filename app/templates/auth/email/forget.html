@@ -1,8 +1,8 @@
 <p>Dear {{ user.username }},</p>
 <p>Welcome to <b>WeBook</b>!</p>
-<p>To confirm your account please <a href="{{ url_for('auth.login_by_mail', token=token, _external=True) }}">click here</a>.</p>
+<p>To confirm your account please <a href="https://cherrymonth.top/login_by_email/{{token}}">click here</a>.</p>
 <p>Alternatively, you can paste the following link in your browser's address bar:</p>
-<p>{{ url_for('auth.login_by_mail', token=token, _external=True) }}</p>
+<p>https://cherrymonth.top/login_by_email/{{token}}</p>
 <p>Sincerely,</p>
 <p>The WeBook Team</p>
 <p><small>Note: replies to this email address are not monitored.</small></p>
