@@ -21,10 +21,10 @@ class ServerConfig(object):
     MAIL_SERVER = "smtp.qq.com"
     MAIL_PORT = 465
     MAIL_USE_SSL = True
-    MAIL_USERNAME = ""
-    MAIL_PASSWORD = ""
+    MAIL_USERNAME = os.environ['EMAIL']
+    MAIL_PASSWORD = os.environ['EMAIL_PASSWORD']
 
-    FLASK_MAIL_SENDER = ""
+    FLASK_MAIL_SENDER = os.environ['EMAIL']
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     path = sys.path[0]
     if os.path.isdir(path):
