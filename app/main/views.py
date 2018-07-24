@@ -111,9 +111,9 @@ def index():
 @main.route("/my_doc/<int:key>/<int:_id>", methods=['GET', "POST"])
 def my_doc(key, _id):
     temp = Category.query.filter_by(user=key)
-    docs = temp.paginate(_id, 10, error_out=True).items
     length = len(temp.all())
     page_num = length / 10 if length % 10 == 0 else length / 10 + 1
+    docs = temp.order_by(Category.id.desc()).paginate(_id, 10, error_out=True).items
     # 总数量 文章列表 当前id 总页数
     return render_template("mydoc.html", key=key, length=length, docs=docs, page=_id, page_num=page_num)
 

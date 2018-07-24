@@ -76,7 +76,7 @@ def unfollowed_user(key):
 @login_required
 def information(page):
     temp = Information.query.filter_by(receive_id=current_user.id)
-    info_list = temp.paginate(page, 10, error_out=True).items
+    info_list = temp.order_by(Information.time.desc()).paginate(page, 10, error_out=True).items
     length = len(temp.all())
     page_num = length / 10 if length % 10 == 0 else length / 10 + 1
     for index in range(len(info_list)):
