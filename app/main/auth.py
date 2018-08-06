@@ -168,3 +168,15 @@ def forget():
         flash(u"一封验证邮件发送到了你的邮箱,请您验收!", "success")
         return redirect(url_for("auth.login"))
     return render_template("auth/check_info.html", form=form)
+
+
+@auth.route("/robots.txt", methods=['GET'])
+def get_robots():
+    robots_dir = os.getcwd() + "/app/static"
+    return send_from_directory(robots_dir, "robots.txt")
+
+
+@auth.route("/sitemap.xml", methods=['GET'])
+def sitemap():
+    sitemap_dir = os.getcwd() + "/app/static"
+    return send_from_directory(sitemap_dir, "sitemap.xml")
