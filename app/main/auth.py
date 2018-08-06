@@ -180,3 +180,9 @@ def get_robots():
 def sitemap():
     sitemap_dir = os.getcwd() + "/app/static"
     return send_from_directory(sitemap_dir, "sitemap.xml")
+
+
+@auth.route("/favicon.ico", methods=['GET'])
+def sitemap():
+    sitemap_dir = os.getcwd() + "/app/static"
+    return send_from_directory(sitemap_dir, "favicon.ico")
