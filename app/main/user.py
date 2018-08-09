@@ -1,10 +1,12 @@
 # coding=utf-8
 
 from flask import render_template, redirect, flash, url_for, request, abort
-from flask import Blueprint
+from flask import Blueprint, current_app, send_from_directory
+import os
 from forms import FindUser
 from models import User, Information
 from app import db
+from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from sqlalchemy import text
 import json
@@ -14,7 +16,6 @@ user = Blueprint("user", __name__)
 
 @user.route("/find_user", methods=['POST', 'GET'])
 def find_user():
-
     form = FindUser()
 
     hot_user_list = User.query.from_statement(
@@ -35,7 +36,6 @@ def find_user():
 @user.route("/followed_user/<key>", methods=['GET', 'POST'])
 @login_required
 def followed_user(key):
-
     _user = User.query.filter_by(id=key).first()
     if not _user:
         flash(u"用户不存在!", "warning")
@@ -55,7 +55,6 @@ def followed_user(key):
 @user.route("/unfollowed_user/<key>", methods=['GET', 'POST'])
 @login_required
 def unfollowed_user(key):
-
     _user = User.query.filter_by(id=key).first()
     if not _user:
         flash(u"用户不存在!", "warning")
@@ -136,7 +135,6 @@ def follow_me():
 
 @user.route("/get_user_info/", methods=['GET', 'POST'])
 def get_user_info():
-
     key = request.args.get('email') or ""
     password = request.args.get('password')
     _user = User.query.filter_by(email=key).first()
@@ -156,7 +154,6 @@ def get_user_info():
 @user.route("/send_info/<int:key>", methods=["POST"])
 @login_required
 def send_info(key):
-
     info = Information()
     _user = User.query.filter_by(id=key).first()
 
@@ -170,3 +167,32 @@ def send_info(key):
     db.session.commit()
     flash(u"发送成功!", "success")
     return redirect(url_for("main.index"))
+
+
+@user.route("/upload_images", methods=['POST', "GET"])
+@login_required
+def upload_images():
+    _file = request.files.get('editormd-image-file')
+    result = dict()
+    _type = _file.filename.split(".")[-1].lower()
+    filename = secure_filename(_file.filename)
+    _file.save(os.path.join(current_app.config['PAGE_UPLOAD_FOLDER'], filename))
+    if not _type or _type not in ["jpg", "jpeg", "gif", "png", "bmp", "webp"]:
+        result['success'] = 0
+        result['message'] = u"图片格式错误，当前只支持'jpeg', 'jpg', 'bmp', 'png', 'webp'" \
+                            u", 'gif'!"
+        result['url'] = None
+        return json.dumps(result)
+    else:
+        result['success'] = 1
+        result['message'] = u"上传成功!"
+        result['url'] = "http://cherrymonth.top/display_images/{}".format(filename)
+        return json.dumps(result)
+
+
+@user.route("/display_images/<filename>", methods=['GET'])
+def display_images(filename):
+    if not os.path.exists(current_app.config['PAGE_UPLOAD_FOLDER'] + filename):
+        return send_from_directory(current_app.config['PAGE_UPLOAD_FOLDER'], "-1.jpg")
+    else:
+        return send_from_directory(current_app.config['PAGE_UPLOAD_FOLDER'], filename)
