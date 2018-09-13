@@ -480,7 +480,7 @@ def edit_password():
     form = EditPassword()
 
     if request.method == "POST":
-        if session['check'] != 'true' and not current_user.verify_password(form.old.data):
+        if session.get('check') != 'true' and not current_user.verify_password(form.old.data):
             flash(u"用户密码错误，请重新输入!", "warning")
             return redirect(url_for("main.edit_password"))
 
