@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from flask import render_template, redirect, flash, url_for, request
+from flask import send_from_directory, render_template, redirect, flash, url_for, request
 from flask import Blueprint, current_app, session
 from werkzeug.utils import secure_filename
 from flask_login import login_user, logout_user, login_required, current_user
@@ -168,3 +168,21 @@ def forget():
         flash(u"一封验证邮件发送到了你的邮箱,请您验收!", "success")
         return redirect(url_for("auth.login"))
     return render_template("auth/check_info.html", form=form)
+
+
+@auth.route("/robots.txt", methods=['GET'])
+def get_robots():
+    robots_dir = os.getcwd() + "/app/static"
+    return send_from_directory(robots_dir, "robots.txt")
+
+
+@auth.route("/sitemap.xml", methods=['GET'])
+def sitemap():
+    sitemap_dir = os.getcwd() + "/app/static"
+    return send_from_directory(sitemap_dir, "sitemap.xml")
+
+
+@auth.route("/favicon.ico", methods=['GET'])
+def favicon():
+    favicon_dir = os.getcwd() + "/app/static"
+    return send_from_directory(favicon_dir, "favicon.ico")

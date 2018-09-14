@@ -437,6 +437,7 @@ def edit_email():
 @login_required
 def edit_basic():
     form = EditBasic()
+    form.user_type.data = ["Moderator", "Administrator", "User"][current_user.role_id - 1]
     if request.method == "POST":
         # filter 支持表达式 比 filter 更强大
 
@@ -480,7 +481,7 @@ def edit_password():
     form = EditPassword()
 
     if request.method == "POST":
-        if session['check'] != 'true' and not current_user.verify_password(form.old.data):
+        if session.get('check') != 'true' and not current_user.verify_password(form.old.data):
             flash(u"用户密码错误，请重新输入!", "warning")
             return redirect(url_for("main.edit_password"))
 
