@@ -106,6 +106,8 @@ class Category(db.Model):
                                lazy='dynamic',
                                cascade='all, delete-orphan')
 
+    disabled = db.Column(db.Boolean, nullable=False, default=False)
+
     favorite = db.relationship('Favorite',  # 关注这篇文章的人
                                foreign_keys=[Favorite.favorited_id],
                                backref=db.backref('favorited', lazy='joined'),
