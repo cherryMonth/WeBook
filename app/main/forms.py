@@ -65,6 +65,7 @@ class EditBasic(FlaskForm):
     username = StringField(u'用户名')
     filename = FileField(u"上传用户头像")
     about_me = TextAreaField(u"个人简介")
+    user_type = StringField(u'用户身份')
     submit = SubmitField(u'提交')
 
 

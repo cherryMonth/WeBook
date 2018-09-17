@@ -31,6 +31,10 @@ class ServerConfig(object):
         UPLOAD_FOLDER = path + u"/images/"
     else:
         UPLOAD_FOLDER = os.path.dirname(path) + u"/images/"
+    if os.path.isdir(path):
+        PAGE_UPLOAD_FOLDER = path + u"/page_images/"
+    else:
+        PAGE_UPLOAD_FOLDER = os.path.dirname(path) + u"/page_images/"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
                               os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
