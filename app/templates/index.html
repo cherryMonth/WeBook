@@ -51,7 +51,7 @@
                         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav">
                                 <li><a href="{{ url_for('main.index') }}">首页</a></li>
-                                <li><a href="{{ url_for('main.find_file') }}">发现</a></li>
+                                <li><a href="{{ url_for('main.find_file', key=7) }}">发现</a></li>
                                 <li><a href="{{ url_for('user.find_user') }}">关注</a></li>
                                 {% if not current_user.is_anonymous %}
                                     <li style="margin-left:25%"><a

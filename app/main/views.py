@@ -382,11 +382,15 @@ def downloader(key):
             time.sleep(1)
 
 
-@main.route("/find_file", methods=['GET', 'POST'])
-def find_file():
+@main.route("/find_file/<int:key>", methods=['GET', 'POST'])   # 七天最高
+def find_file(key):
     form = FindFile()
-    hot_doc_list = Category.query.from_statement(
-        text("SELECT * FROM markdown.category ORDER BY collect_num DESC LIMIT 5 ;")).all()
+    if key == 7:
+        hot_doc_list = Category.query.from_statement(text("SELECT * FROM markdown.category where DATE_SUB(CURDATE(), "
+        "INTERVAL 7 DAY) <= date(update_time) ORDER BY collect_num DESC LIMIT 10 ;")).all()
+    else:
+        hot_doc_list = Category.query.from_statement(text("SELECT * FROM markdown.category ORDER BY "
+                                                          "collect_num DESC LIMIT 10 ;")).all()
     for doc in hot_doc_list:
         doc.username = User.query.filter_by(id=doc.user).first().username
     if form.validate_on_submit():
@@ -397,10 +401,10 @@ def find_file():
         length = len(doc_list)
         if not doc_list:
             flash(u"没有找到符合要求的文章!", "warning")
-            return redirect(url_for("main.find_file"))
+            return redirect(url_for("main.find_file", key=7))
 
-        return render_template("find_file.html", form=form, doc_list=doc_list, length=length)
-    return render_template("find_file.html", form=form, hot_doc_list=hot_doc_list)
+        return render_template("find_file.html", form=form, doc_list=doc_list, length=length, key=7)
+    return render_template("find_file.html", form=form, hot_doc_list=hot_doc_list, key=key)
 
 
 @main.route("/edit_email", methods=['GET', 'POST'])
