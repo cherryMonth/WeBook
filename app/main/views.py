@@ -387,10 +387,10 @@ def find_file(key):
     form = FindFile()
     if key == 7:
         hot_doc_list = Category.query.from_statement(text("SELECT * FROM markdown.category where DATE_SUB(CURDATE(), "
-        "INTERVAL 7 DAY) <= date(update_time) ORDER BY collect_num DESC LIMIT 10 ;")).all()
+        "INTERVAL 7 DAY) <= date(update_time) ORDER BY collect_num desc,update_time desc  LIMIT 10 ;")).all()
     else:
         hot_doc_list = Category.query.from_statement(text("SELECT * FROM markdown.category ORDER BY "
-                                                          "collect_num DESC LIMIT 10 ;")).all()
+                                                          "collect_num desc,update_time desc LIMIT 10 ;")).all()
     for doc in hot_doc_list:
         doc.username = User.query.filter_by(id=doc.user).first().username
     if form.validate_on_submit():
