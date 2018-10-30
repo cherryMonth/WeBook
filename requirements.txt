@@ -11,7 +11,7 @@ cairocffi==0.8.0
 CairoSVG==1.0.22
 certbot==0.24.0
 certbot-apache==0.24.0
-certifi==2018.4.16
+certifi==2018.10.15
 cffi==1.11.5
 chardet==3.0.4
 Cheetah==2.4.4
@@ -107,7 +107,7 @@ pyxattr==0.5.1
 PyYAML==3.12
 pyzmq==14.3.1
 repoze.lru==0.4
-requests==2.19.0
+requests==2.20.0
 sasl==0.2.1
 schedutils==0.4
 scipy==1.0.0
@@ -130,7 +130,7 @@ tornado==5.0
 Twisted==18.4.0
 txsockjs==1.2.2
 urlgrabber==3.10
-urllib3==1.23
+urllib3==1.24
 virtualenv==15.1.0
 visitor==0.1.3
 WeasyPrint==0.42.3
