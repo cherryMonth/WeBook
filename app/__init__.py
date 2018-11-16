@@ -7,6 +7,7 @@ from config import config
 from flask_mail import Mail
 from flask_login import LoginManager, current_user
 from whoosh.analysis import StemmingAnalyzer
+from flask_gemoji import Gemoji
 
 
 db = SQLAlchemy()
@@ -23,6 +24,7 @@ def create_app(config_name):
     Markdown(app)
     db.init_app(app)
     mail.init_app(app)
+    Gemoji.init_app(app)
     login_manager.init_app(app)
     from app.main.views import main
     from app.main.auth import auth
