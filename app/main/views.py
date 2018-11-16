@@ -92,11 +92,11 @@ def edit():
             info = Information()
             info.launch_id = current_user.id
             info.receive_id = _user.follower_id
+            info.time = datetime.datetime.now()
             db.session.add(info)
             db.session.flush()
             info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + u"<a style='color: #d82433' " \
-                                                                            u"href='{}?check={}'>{}</a>".format(
-                u"/display/" + str(p.id), info.id, p.title) + u"。"
+                u"href='{}?check={}'>{}</a>".format(u"/display/" + str(p.id), info.id, p.title) + u"。"
         t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
         t.start()
         db.session.commit()
@@ -529,8 +529,7 @@ def add_comment(key):
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
-                                                                 u"href='{}'>{}</a>".format(
-            u"/display/" + str(category.id), category.title) + u"进行了评论!"
+            u"href='{}'>{}</a>".format(u"/display/" + str(category.id), category.title) + u"进行了评论!"
         db.session.add(_info)
         db.session.add(comment)
         db.session.commit()
@@ -553,8 +552,7 @@ def edit_comment(key):
         category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
-                                                                 u"href='{}'>{}</a>".format(
-            u"/display/" + str(category.id), category.title) + u"修改了评论!"
+            u"href='{}'>{}</a>".format(u"/display/" + str(category.id), category.title) + u"修改了评论!"
         db.session.add(_info)
         comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(comment)
@@ -581,11 +579,13 @@ def response_comment(post_id, key):
         _info.receive_id = comment.comment_user.id
         comment.comment_user = comment.comment_user.username
         comment.timestamp = datetime.datetime.now()
-        _info.info = u"用户" + current_user.username + u" 对您在" + u"<a style='color: #d82433' " \
-                                                               u"href='{}'>{}</a>".format(
-            u"/display/" + str(category.id), category.title) + u"的评论进行了回复!"
         db.session.add(_info)
         db.session.add(comment)
+        db.session.flush()
+        _info.info = u"用户" + current_user.username + u" 对您在" + u"<a style='color: #d82433' " \
+            u"href='{}?check={}'>{}</a>".format(u"/display/" + str(category.id), _info.id, category.title) + \
+            u"的评论进行了回复!"
+
         db.session.commit()
         flash(u"回复成功!", "success")
         return redirect("/display/" + str(post_id))
