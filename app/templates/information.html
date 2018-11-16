@@ -53,14 +53,14 @@
             <td style="color: black;word-wrap:break-word;">
                 {{ info['time'] }}
             </td>
-            <td style="color: black;word-wrap:break-word;">
+            <td style="color: black;word-wrap:break-word;width:10%">
                 {% if info['confirm'] == True %}
                 已查看
                 {% else %}
                  未查看
                 {% endif %}
             </td>
-            <td style="word-wrap:break-word;">
+            <td style="word-wrap:break-word;width:10%">
                 {% if info.confirm != True %}
                 <a href='/info_confirm/{{info['id']}}/{{ page }}'>已阅</a>
                 {% endif %}
