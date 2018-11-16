@@ -528,8 +528,10 @@ def add_comment(key):
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
+        db.session.add(_info)
+        db.session.flush()
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
-            u"href='{}'>{}</a>".format(u"/display/" + str(category.id), category.title) + u"进行了评论!"
+            u"href='{}?check={}'>{}</a>".format(u"/display/" + str(category.id), _info.id, category.title) + u"进行了评论!"
         db.session.add(_info)
         db.session.add(comment)
         db.session.commit()
@@ -551,8 +553,10 @@ def edit_comment(key):
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user
+        db.session.add(_info)
+        db.session.flush()
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
-            u"href='{}'>{}</a>".format(u"/display/" + str(category.id), category.title) + u"修改了评论!"
+            u"href='{}?check={}'>{}</a>".format(u"/display/" + str(category.id), _info.id, category.title) + u"修改了评论!"
         db.session.add(_info)
         comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(comment)
