@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from flaskext.markdown import Markdown
-from flask import Flask, render_template, g, redirect, url_for
+from flask import Flask, render_template, g
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flask_mail import Mail

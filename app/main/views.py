@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from flask import render_template, redirect, flash, url_for, request, abort, send_from_directory
+from flask import redirect, flash, url_for, request, abort, send_from_directory
 from flask import Blueprint, current_app, session
 from forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
 from flask_login import login_required, current_user
@@ -10,6 +10,7 @@ from models import Category, Favorite, User, Comment, Role, Information
 import datetime
 from ..email import send_email
 import os
+from flask import render_template, g
 import time
 from sqlalchemy import text
 import subprocess
@@ -70,7 +71,7 @@ def work(_id, info):
         _file.write(tmp + "\n")
     _file.close()
     user_page[_id] = 'work'
-    IOLoop.instance().add_timeout(50, callback=pop, args=(_id, ))
+    IOLoop.instance().add_timeout(50, callback=pop, args=(_id,))
     os.system("pandoc {} --template eisvogel  --pdf-engine xelatex   -o {} -V CJKmainfont='SimSun'  "
               "--highlight-style pygments --listings ".format(filename, pdf_name))
 
@@ -91,9 +92,11 @@ def edit():
             info = Information()
             info.launch_id = current_user.id
             info.receive_id = _user.follower_id
-            info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + u"<a style='color: #d82433' " \
-                u"href='{}'>{}</a>".format(u"/display/"+str(p.id), p.title) + u"。"
             db.session.add(info)
+            db.session.flush()
+            info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + u"<a style='color: #d82433' " \
+                                                                            u"href='{}?check={}'>{}</a>".format(
+                u"/display/" + str(p.id), info.id, p.title) + u"。"
         t = threading.Thread(target=work, args=(str(p.id), p.content.encode("utf-8")))
         t.start()
         db.session.commit()
@@ -123,13 +126,23 @@ def dispaly(key):
     p = Category.query.filter_by(id=key).first()
     if not current_user.is_anonymous:
         is_collect = Favorite.query.filter_by(favorited_id=key, favorite_id=current_user.id).first()
+        if request.args. has_key('check'):
+            temp = Information.query.filter_by(id=int(request.args['check'])).first()
+            temp.confirm = True
+            db.session.add(temp)
+            db.session.commit()
+            message_nums = len([info for info in current_user.received if info.confirm is False])
+            if message_nums > 0:
+                g.message_nums = message_nums
+            else:
+                g.message_nums = None
     else:
         is_collect = None
     if not p:
         flash(u'该文章不存在！', 'warning')
         abort(404)
     comments = Comment.query.filter_by(post_id=key).all()
-
+    print(request.url)
     permission = Role.query.filter_by(id=current_user.role_id).first().permissions
 
     html = u'''
@@ -177,7 +190,7 @@ def dispaly(key):
 
         comments[_index].html = html.format(string)
 
-    return render_template("display.html",  post=p, is_collect=is_collect, comments=comments)
+    return render_template("display.html", post=p, is_collect=is_collect, comments=comments)
 
 
 @main.route("/cancel/<key>", methods=['GET', "POST"])
@@ -237,6 +250,7 @@ def del_file(key, page):
     db.session.commit()
     flash(u'删除成功！', 'success')
     return redirect(url_for("main.my_doc", key=current_user.id, _id=page))
+
 
 """
 pandoc -s --smart --latex-engine=xelatex -V CJKmainfont='SimSun' -V mainfont="SimSun" -V geometry:margin=1in test.md  -o output.pdf
@@ -309,7 +323,7 @@ def downloader(key):
         return send_from_directory(file_dir, pdf, as_attachment=True)
 
     popen = None
-    if not user_page. has_key(str(p.id)):
+    if not user_page.has_key(str(p.id)):
         user_page[str(p.id)] = 'work'
         print str(p.id) + "begin work"
         info = p.content.encode("utf-8")
@@ -355,7 +369,7 @@ def downloader(key):
                 "--highlight-style pygments --listings ".format(filename, pdf_name)
         import shlex
         popen = subprocess.Popen(shlex.split(shell), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        IOLoop.instance().add_timeout(50, callback=pop, args=(str(p.id), ))
+        IOLoop.instance().add_timeout(50, callback=pop, args=(str(p.id),))
     else:
         print "have one working"
     count = 0
@@ -366,7 +380,7 @@ def downloader(key):
 
         elif count == 50:
             flash(u'导出失败, 请检查您的文档!(例如:图片格式只能使用jpg,png, Latex语法只支持XeLax!)', 'warning')
-            IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
+            IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id),))
             return redirect(url_for("main.my_doc", key=current_user.id, _id=1))
         else:
             if popen and popen.poll() is None:
@@ -376,18 +390,18 @@ def downloader(key):
                 if 'Error' in line or 'Warning' in line or "Could not" in line or 'WARNING' in line:
                     popen.terminate()
                     flash(u'导出失败, {}'.format(line), 'warning')
-                    IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id), ))
+                    IOLoop.instance().add_timeout(0, callback=pop, args=(str(p.id),))
                     return redirect(url_for("main.my_doc", key=current_user.id, _id=1))
             count += 1
             time.sleep(1)
 
 
-@main.route("/find_file/<int:key>", methods=['GET', 'POST'])   # 七天最高
+@main.route("/find_file/<int:key>", methods=['GET', 'POST'])  # 七天最高
 def find_file(key):
     form = FindFile()
     if key == 7:
         hot_doc_list = Category.query.from_statement(text("SELECT * FROM markdown.category where DATE_SUB(CURDATE(), "
-        "INTERVAL 7 DAY) <= date(update_time) ORDER BY collect_num desc,update_time desc  LIMIT 10 ;")).all()
+                                                          "INTERVAL 7 DAY) <= date(update_time) ORDER BY collect_num desc,update_time desc  LIMIT 10 ;")).all()
     else:
         hot_doc_list = Category.query.from_statement(text("SELECT * FROM markdown.category ORDER BY "
                                                           "collect_num desc,update_time desc LIMIT 10 ;")).all()
@@ -449,7 +463,7 @@ def edit_basic():
             flash(u"该用户名已经被注册过，请重新输入!", "warning")
             return redirect(url_for("main.edit_basic"))
 
-        _file = request.files['filename'] if request.files. has_key("filename") else None
+        _file = request.files['filename'] if request.files.has_key("filename") else None
         if _file:
             _type = _file.filename.split(".")[-1].lower()
 
@@ -515,7 +529,8 @@ def add_comment(key):
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
-            u"href='{}'>{}</a>".format(u"/display/"+str(category.id), category.title) + u"进行了评论!"
+                                                                 u"href='{}'>{}</a>".format(
+            u"/display/" + str(category.id), category.title) + u"进行了评论!"
         db.session.add(_info)
         db.session.add(comment)
         db.session.commit()
@@ -538,7 +553,8 @@ def edit_comment(key):
         category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
-            u"href='{}'>{}</a>".format(u"/display/" + str(category.id), category.title) + u"修改了评论!"
+                                                                 u"href='{}'>{}</a>".format(
+            u"/display/" + str(category.id), category.title) + u"修改了评论!"
         db.session.add(_info)
         comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         db.session.add(comment)
@@ -566,7 +582,8 @@ def response_comment(post_id, key):
         comment.comment_user = comment.comment_user.username
         comment.timestamp = datetime.datetime.now()
         _info.info = u"用户" + current_user.username + u" 对您在" + u"<a style='color: #d82433' " \
-            u"href='{}'>{}</a>".format(u"/display/"+str(category.id), category.title) + u"的评论进行了回复!"
+                                                               u"href='{}'>{}</a>".format(
+            u"/display/" + str(category.id), category.title) + u"的评论进行了回复!"
         db.session.add(_info)
         db.session.add(comment)
         db.session.commit()
@@ -581,7 +598,7 @@ def del_comment(key):
     if not comment:
         abort(404)
 
-    category = Category.query.filter_by(id=comment.post_id).first()   # 文章
+    category = Category.query.filter_by(id=comment.post_id).first()  # 文章
 
     # 若是管理员，文章作者，评论作者都能删除评论
 
@@ -625,4 +642,3 @@ def show_image(key):
         return send_from_directory(current_app.config['UPLOAD_FOLDER'], "-1.jpg")
     else:
         return send_from_directory(current_app.config['UPLOAD_FOLDER'], user.image_name)
-

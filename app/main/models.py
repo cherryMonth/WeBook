@@ -66,7 +66,7 @@ class Information(db.Model):
 
     confirm = db.Column(db.Boolean, default=False)
 
-    info = db.Column(db.String(100), nullable=False)
+    info = db.Column(db.String(100), nullable=True)
 
 
 class Favorite(db.Model):

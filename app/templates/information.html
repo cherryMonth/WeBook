@@ -47,7 +47,7 @@
             <td style="word-wrap:break-word;">
                     <img src="/show_image/{{info['launch_id']}}" style="height: 30px;width: 30px">&nbsp;{{info['author'].username}}
             </td>
-            <td style="color: black;word-wrap:break-word;">
+            <td style="color: black;word-wrap:break-word;width: 50%">
                 {{ info['info'] | safe}}
             </td>
             <td style="color: black;word-wrap:break-word;">
@@ -62,7 +62,7 @@
             </td>
             <td style="word-wrap:break-word;">
                 {% if info.confirm != True %}
-                <a href='/info_confirm/{{info['id']}}/{{ page }}'>标记为已查看</a>
+                <a href='/info_confirm/{{info['id']}}/{{ page }}'>已阅</a>
                 {% endif %}
                 <a href='/del_info/{{info['id']}}/{{ page }}' style="margin-left: 5%">删除</a>
             </td>
