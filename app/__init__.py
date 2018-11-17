@@ -9,7 +9,6 @@ from flask_login import LoginManager, current_user
 from whoosh.analysis import StemmingAnalyzer
 from flask_gemoji import Gemoji
 
-
 db = SQLAlchemy()
 mail = Mail()
 login_manager = LoginManager()
