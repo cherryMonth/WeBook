@@ -164,7 +164,7 @@ def dispaly(key):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
         comments[_index].img = comments[_index].author_id
         if comments[_index].comment_user_id > 0:
-            comments[_index].comment_user = User.query.filter_by(id=comments[_index].comment_user).first().username
+            comments[_index].comment_user = User.query.filter_by(id=comments[_index].comment_user_id).first().username
         string = ""
 
         if not current_user.is_authenticated:
