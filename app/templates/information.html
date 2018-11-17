@@ -46,7 +46,7 @@
         <tr id="{{info_list.index(info) + 1}}">
             <td style="word-wrap:break-word;width:20%">
                 <img src="/show_image/{{info['launch_id']}}" style="height: 30px;width: 30px">
-                <a href="/my_doc/{{ info['launch_id'] }}/1" style="color: #c59a6d;">&nbsp;{{info['author'].username}}</a>
+                <a href="/my_doc/{{ info['launch_id'] }}/1" style="font-weight: bold;color: black;">&nbsp;{{info['author'].username}}</a>
             </td>
             <td style="color: black;word-wrap:break-word;width: 45%">
                 {{ info['info'] | safe}}
