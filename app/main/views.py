@@ -164,6 +164,7 @@ def dispaly(key):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
         comments[_index].img = comments[_index].author_id
         if comments[_index].comment_user:
+            print comments[_index].comment_user
             comments[_index].comment_id = User.query.filter_by(username=comments[_index].comment_user).first().id
         string = ""
 
@@ -457,7 +458,7 @@ def edit_basic():
     form.user_type.data = ["Moderator", "Administrator", "User"][current_user.role_id - 1]
     if request.method == "POST":
         # filter 支持表达式 比 filter 更强大
-
+        print(form.username.data)
         if User.query.filter_by(username=form.username.data).first() and current_user.username != form.username.data:
             flash(u"该用户名已经被注册过，请重新输入!", "warning")
             return redirect(url_for("main.edit_basic"))

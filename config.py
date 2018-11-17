@@ -36,8 +36,9 @@ class ServerConfig(object):
     else:
         PAGE_UPLOAD_FOLDER = os.path.dirname(path) + u"/page_images/"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD") + '@' + \
-                              os.environ.get("DB") + ':' + os.environ.get("port") + "/" + os.environ.get("database")
+    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://' + os.environ.get("owner") + ':' + os.environ.get("DB_PASSWORD")\
+                              + '@' + os.environ.get("DB") + ':' + os.environ.get("port") + "/" + \
+                              os.environ.get("database") + "?charset=utf8mb4"
 
     @staticmethod
     def init_app(app):

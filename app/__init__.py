@@ -23,8 +23,8 @@ def create_app(config_name):
     Markdown(app)
     db.init_app(app)
     mail.init_app(app)
-    login_manager.init_app(app)
     Gemoji.init_app(app)
+    login_manager.init_app(app)
     from app.main.views import main
     from app.main.auth import auth
     from app.main.user import user

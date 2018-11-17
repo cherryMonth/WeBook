@@ -83,7 +83,7 @@
             <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
             {% endif %}
-            <td style="color:black" >{{comment.body|markdown}}</td>
+            <td style="color:black" >{{comment.body|gemoji |markdown}}</td>
             <td style="color:black">{{comment.timestamp}}</td>
             <td style="color:black">{{comment.html|safe}}</td>
         </tr>

@@ -142,3 +142,4 @@ yum-metadata-parser==1.1.4
 zope.component==4.1.0
 zope.event==4.0.3
 zope.interface==4.5.0
+flask-gemoji==0.2.0
