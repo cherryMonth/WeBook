@@ -456,7 +456,13 @@ def edit_basic():
     form.user_type.data = ["Moderator", "Administrator", "User"][current_user.role_id - 1]
     if request.method == "POST":
         # filter 支持表达式 比 filter 更强大
-        if User.query.filter_by(username=form.username.data).first() and current_user.username != form.username.data:
+        temp = User.query.filter_by(username=form.username.data).first()
+        if temp is form.username.data and current_user.username != form.username.data:
+            print User.query.filter_by(username=form.username.data).first()
+            print current_user.username
+            print form.username.data
+            print current_user.username != form.username.data
+            print current_user.username is form.username.data
             flash(u"该用户名已经被注册过，请重新输入!", "warning")
             return redirect(url_for("main.edit_basic"))
 
