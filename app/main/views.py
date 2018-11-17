@@ -163,9 +163,8 @@ def dispaly(key):
     for _index in range(len(comments)):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
         comments[_index].img = comments[_index].author_id
-        if comments[_index].comment_user:
-            print comments[_index].comment_user
-            comments[_index].comment_id = User.query.filter_by(username=comments[_index].comment_user).first().id
+        if comments[_index].comment_user_id > 0:
+            comments[_index].comment_user = User.query.filter_by(id=comments[_index].comment_user).first().username
         string = ""
 
         if not current_user.is_authenticated:
@@ -177,16 +176,15 @@ def dispaly(key):
             <li style="cursor: pointer;"><a  onclick="edit_comment({})">修改</a></li>
             <li><a href="/del_comment/{}">删除</a></li>
             <li style="cursor: pointer;"><a  onclick="response_comment('{}')">回复</a></li>
-            '''.format(comments[_index].id, comments[_index].id, comments[_index].author)
+            '''.format(comments[_index].id, comments[_index].id, comments[_index].author_id)
 
         elif permission >= 31 or current_user.id == p.user:
             string = u'''<li style="cursor: pointer;"><a  onclick="response_comment('{}')">回复</a></li>
                          <li><a href="/del_comment/{}">删除</a></li>
-                        '''.format(comments[_index].author, comments[_index].id)
-
+                        '''.format(comments[_index].author_id, comments[_index].id)
         else:
             string = u'''<li style="cursor: pointer;"><a onclick="response_comment('{}')">回复</a></li>
-                                    '''.format(comments[_index].author)
+                                    '''.format(comments[_index].author_id)
 
         comments[_index].html = html.format(string)
 
@@ -565,7 +563,7 @@ def edit_comment(key):
         return redirect("/display/" + str(comment.post_id))
 
 
-@main.route("/response_comment/<int:post_id>/<key>", methods=["POST"])
+@main.route("/response_comment/<int:post_id>/<int:key>", methods=["POST"])
 @login_required
 def response_comment(post_id, key):
     if request.method == "POST":
@@ -573,15 +571,12 @@ def response_comment(post_id, key):
         if not Category.query.filter_by(id=post_id).first():
             abort(404)
         comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=post_id)
-        comment.comment_user = User.query.filter_by(username=key).first()
-        if not comment.comment_user:
-            abort(404)
+        comment.comment_user_id = key
         _info = Information()
         _info.time = datetime.datetime.now()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=post_id).first()
-        _info.receive_id = comment.comment_user.id
-        comment.comment_user = comment.comment_user.username
+        _info.receive_id = comment.comment_user_id
         comment.timestamp = datetime.datetime.now()
         db.session.add(_info)
         db.session.add(comment)

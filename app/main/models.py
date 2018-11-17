@@ -85,7 +85,8 @@ class Comment(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now())
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)  # 哪篇文章
-    comment_user = db.Column(db.String(20))  # 被评论者 一般是不存在　当有人回复时是被回复者的id
+    comment_user_id = db.Column(db.Integer)  # 被评论者 一般是不存在　当有人回复时是被回复者的id
+
     # disabled = db.Column(db.Boolean, default=False)  # 是否隐藏
 
 
