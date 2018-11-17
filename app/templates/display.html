@@ -75,19 +75,37 @@
         </thead>
         <tbody>
         {% for comment in comments %}
-        {% if comment.comment_user %}
-        <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
-            <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a> 回复
-            <a href="/my_doc/{{ comment.comment_id }}/1" style="color: blue;">{{ comment.comment_user }}</a>:
-        </td>
-        {% else %}
-        <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
-            <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
-        {% endif %}
-        <td style="color:black">{{comment.body|gemoji |markdown}}</td>
-        <td style="color:black">{{comment.timestamp}}</td>
-        <td style="color:black">{{comment.html|safe}}</td>
+        <tr>
+            {% if comment.comment_user %}
+            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
+                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a> 回复
+                <a href="/my_doc/{{ comment.comment_id }}/1" style="color: blue;">{{ comment.comment_user }}</a>:
+            </td>
+            {% else %}
+            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
+                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
+            {% endif %}
+            <td style="color:black">
+                <div id="view_{{comment.id}}">
+                    <textarea>{{comment.body|gemoji}}</textarea>
+                </div>
+            </td>
+            <td style="color:black">{{comment.timestamp}}</td>
+            <td style="color:black">{{comment.html|safe}}</td>
         </tr>
+        <script>
+            $(function () {
+                var testEditormdView = editormd.markdownToHTML("view_{{comment.id}}", {
+                    width: "90%",  // 长度
+                    theme: "default", // 主题
+                    previewTheme: "default",
+                    editorTheme: "base16-light",
+                    emoji: true,
+                    taskList: true,
+                    path: "/static/editormd/lib/"
+                });
+            });
+        </script>
         {% endfor %}
         </tbody>
     </table>
@@ -139,8 +157,6 @@
             tex: true,                   // 开启科学公式TeX语言支持，默认关闭
             flowChart: true,             // 开启流程图支持，默认关闭
             sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
-
-            searchReplace: "true",
             path: "/static/editormd/lib/"
         });
     });
