@@ -61,7 +61,7 @@
         </div>
 
     </div>
-    <hr style="width: 100%;margin-top:10%" id="comments">
+    <hr style="width: 100%;margin-top:10%">
 
     {% if comments %}
     <table data-toggle="table" class="table-hover table">
@@ -75,78 +75,44 @@
         </thead>
         <tbody>
         {% for comment in comments %}
-            {% if comment.comment_user %}
-            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
-                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a> 回复
-                <a href="/my_doc/{{ comment.comment_id }}/1" style="color: blue;">{{ comment.comment_user }}</a>:</td>
-            {% else %}
-            <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
-               <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
-            {% endif %}
-            <td style="color:black" >{{comment.body|gemoji |markdown}}</td>
-            <td style="color:black">{{comment.timestamp}}</td>
-            <td style="color:black">{{comment.html|safe}}</td>
+        {% if comment.comment_user %}
+        <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
+            <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a> 回复
+            <a href="/my_doc/{{ comment.comment_id }}/1" style="color: blue;">{{ comment.comment_user }}</a>:
+        </td>
+        {% else %}
+        <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
+            <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
+        {% endif %}
+        <td style="color:black">{{comment.body|gemoji |markdown}}</td>
+        <td style="color:black">{{comment.timestamp}}</td>
+        <td style="color:black">{{comment.html|safe}}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
     {% endif %}
 
-    <button class="btn btn-default" style="float:right;margin-right: 3%;margin-bottom: 5%;float:left"
-            onclick="addcomment()">添加评论
+    <button class="btn btn-default" style="margin-right: 3%;margin-bottom: 5%;" onclick="addcomment()">添加评论
     </button>
     <button id="remove" class="btn btn-default" style="display: none" onclick="removecomment()">取消</button>
-    <div id="comments">
-        <script>
-            function addcomment() {
-                var handler = document.getElementById("addcomment")
-                handler.setAttribute("style", "margin-top:20px;")
-                var btn = document.getElementById("remove")
-                btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
-            }
-
-            function removecomment() {
-                var handler = document.getElementById("addcomment")
-                handler.setAttribute("style", "display:none")
-                var btn = document.getElementById("remove")
-                btn.setAttribute("style", "display: none")
-            }
-
-            function edit_comment(key) {
-                var handler = document.getElementById("addcomment")
-                handler.setAttribute("style", "margin-top:20px;")
-                var btn = document.getElementById("remove")
-                btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
-                var form = document.getElementById("form")
-                form.setAttribute("action", "/edit_comment/"+key)
-            }
-
-            function response_comment(key) {
-                var handler = document.getElementById("addcomment");
-                handler.setAttribute("style", "margin-top:20px;");
-                var btn = document.getElementById("remove");
-                btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
-                var form = document.getElementById("form");
-                form.setAttribute("action", "/response_comment/{{ post.id }}/"+key);
-            }
-
-        </script>
-        <br>
-        <div id="addcomment" style="display:none;margin-top:50px;">
-            <hr style="width: 100%;">
-            <form id="form" method="post" action="/add_comment/{{post.id}}">
-                <div class="form-group">
-                    <textarea name="comment" class="textarea" , style="width:400px;height:60px;float:left"
-                              placeholder="最多只能输入150字哦(支持markdown语法)..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn-default btn" , style="float:right">提交</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <br>
 </div>
-<a href="#" id="toTop" title="点击移动到顶部!" style="display: block;bottom: 50px;margin-right: 200px;height: 40px;"><span id="toTopHover" style="opacity: 0;"></span></a>
+
+<div id="addcomment" style="display: none;">
+    <hr style="width: 65%;">
+    <form id="form" method="post" action="/add_comment/{{post.id}}">
+        <div class="form-group">
+            <div id='comment'>
+                <textarea name="comment" class="editormd-markdown-textarea"></textarea>
+            </div>
+            <button type="submit" class="btn-default btn" style="margin-left: 79%">提交</button>
+        </div>
+    </form>
+</div>
+
+<a href="#" id="toTop" title="点击移动到顶部!" style="display: block;bottom: 50px;margin-right: 100px;height: 40px;"><span
+        id="toTopHover" style="opacity: 0;"></span></a>
 {% endblock content %}
 
 
@@ -175,9 +141,10 @@
             sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
 
             searchReplace: "true",
-            path: "{{ url_for('static',filename='editormd/lib/') }}"
+            path: "/static/editormd/lib/"
         });
     });
+
 
     $(document).ready(function () {
         $(".dropdown").hover(
@@ -191,6 +158,60 @@
             }
         );
     });
+
+    function addcomment() {
+        var handler = document.getElementById("addcomment")
+        handler.setAttribute("style", "margin-top:20px;")
+        var btn = document.getElementById("remove")
+        btn.setAttribute("style", "float:right;margin-right: 3%;margin-bottom: 5%;float:right")
+
+        $(function () {
+            testEditor = editormd("comment", {
+                width: "65%",  // 长度
+                height: "300px",  // 宽度
+                theme: "default", // 主题
+                previewTheme: "default",
+                editorTheme: "base16-light",
+                searchReplace: true,
+                syncScrolling: "single",  // 保存 HTML 到 Textarea
+                emoji: true,
+                toolbarIcons: function () {
+                    // Or return editormd.toolbarModes[name]; // full, simple, mini
+                    // Using "||" set icons align right.
+                    return ["undo", "redo", "|", "bold", "hr", "|", "code", "image", "emoji", "||", "watch", "preview"]
+                },
+                taskList: true,
+                tocm: true,         // Using [TOCM]
+                dialogLockScreen: false,//设置弹出层对话框不锁屏，全局通用，默认为true
+                dialogShowMask: false,//设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+                dialogDraggable: false,//设置弹出层对话框不可拖动，全局通用，默认为true
+                dialogMaskOpacity: 0.4, //设置透明遮罩层的透明度，全局通用，默认值为0.1
+                dialogMaskBgColor: "#000",//设置透明遮罩层的背景颜色，全局通用，默认为#fff
+                codeFold: true,
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL: "/upload_images",//注意你后端的上传图片服务地址
+                path: "{{ url_for('static',filename='editormd/lib/') }}"
+            });
+        });
+    }
+
+    function removecomment() {
+        var handler = document.getElementById("addcomment")
+        handler.setAttribute("style", "display:none")
+        var btn = document.getElementById("remove")
+        btn.setAttribute("style", "display: none")
+    }
+
+    function edit_comment(key) {
+        addcomment();
+        form.setAttribute("action", "/edit_comment/" + key)
+    }
+
+    function response_comment(key) {
+        addcomment();
+        form.setAttribute("action", "/response_comment/{{ post.id }}/" + key);
+    }
 
 </script>
 {% endblock content_script %}

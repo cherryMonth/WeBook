@@ -106,6 +106,16 @@
                 dialogMaskBgColor: "#000",//设置透明遮罩层的背景颜色，全局通用，默认为#fff
                 codeFold: true,
                 imageUpload: true,
+                image : {
+                    title    : "添加图片",
+                    url      : "图片地址",
+                    link     : "图片链接",
+                    alt      : "图片描述",
+                    uploadButton     : "本地上传",
+                    imageURLEmpty    : "错误：图片地址不能为空。",
+                    uploadFileEmpty  : "错误：上传的图片不能为空。",
+                    formatNotAllowed : "错误：只允许上传图片文件，允许上传的图片文件格式有：jpeg, gif, png, bmp, webp!"
+                },
                 imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
                 imageUploadURL: "/upload_images",//注意你后端的上传图片服务地址
                 path: "{{ url_for('static',filename='editormd/lib/') }}"
