@@ -24,7 +24,7 @@ class ServerConfig(object):
     MAIL_USERNAME = os.environ.get("EMAIL")
     MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
-    FLASK_MAIL_SENDER = "sj1115064450@vip.qq.com"
+    FLASK_MAIL_SENDER = os.environ.get("EMAIL")
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     path = sys.path[0]
     if os.path.isdir(path):
