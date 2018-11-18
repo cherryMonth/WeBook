@@ -7,6 +7,7 @@
 {% block styles %}
 {{super()}}
 <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/moment-with-locales.min.js') }}"></script>
 <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.js') }}"></script>
 {% endblock %}
 
@@ -38,7 +39,7 @@
         <tr>
             <th>发送方</th>
             <th>内容</th>
-            <th>发送时间</th>
+            <th>最后修改时间</th>
             <th>状态</th>
             <th>操作</th>
         </tr>
@@ -52,7 +53,7 @@
                 {{ info['info'] | safe}}
             </td>
             <td style="color: black;word-wrap:break-word;width:15%">
-                {{ info['time'] }}
+                <div class="text-center">{{ moment(info['time']).fromNow() }}</div>
             </td>
             <td style="color: black;word-wrap:break-word;width:10%">
                 {% if info['confirm'] == True %}
@@ -102,6 +103,32 @@
 
 {% block content_script %}
 <script>
+
+    moment.locale("zh_CN");
+
+    function flask_moment_render(elem) {
+        elem.innerHTML = eval('moment("' + elem.dataset.timestamp + '").' + elem.dataset.format + ';');
+        elem.classList.remove('flask-moment')
+        elem.style.display = 'inline';
+    }
+
+    function flask_moment_render_all() {
+        elems = Array.from(document.getElementsByClassName('flask-moment'));
+        for (var i = 0; i < elems.length; i++) {
+            elem = elems[i];
+            flask_moment_render(elem);
+            if (elem.dataset.refresh > 0) {
+                setInterval(function () {
+                    flask_moment_render(this);
+                }.bind(elem), parseInt(elem.dataset.refresh));
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        flask_moment_render_all();
+    });
+
     $(document).ready(function () {
         $(".dropdown").hover(
             function () {
