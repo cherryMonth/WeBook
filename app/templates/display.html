@@ -78,12 +78,12 @@
         <tr>
             {% if comment.comment_user %}
             <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
-                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a> 回复
-                <a href="/my_doc/{{ comment.comment_id }}/1" style="color: blue;">{{ comment.comment_user }}</a>:
+                <a href="/my_doc/{{ comment.author_id }}/1" style="font-size:0.82em;font-weight: bold;color: black;">{{comment.author}}</a> 回复
+                <a href="/my_doc/{{ comment.comment_id }}/1" style="font-size: 0.82em;font-weight: bold;color: black;">{{ comment.comment_user }}</a>:
             </td>
             {% else %}
             <td style="color:black"><img src="/show_image/{{comment.img}}" style="height: 30px;width: 30px">&nbsp;
-                <a href="/my_doc/{{ comment.author_id }}/1" style="color: blue;">{{comment.author}}</a></td>
+                <a href="/my_doc/{{ comment.author_id }}/1" style="font-size: 0.82em;font-weight: bold;color: black;">{{comment.author}}</a></td>
             {% endif %}
             <td style="color:black">
                 <div id="view_{{comment.id}}">
