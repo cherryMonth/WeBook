@@ -85,14 +85,14 @@ def edit():
         p.title = form.title.data
         p.content = form.text.data
         p.user = current_user.id
-        p.update_time = datetime.datetime.now()
+        p.update_time = datetime.datetime.utcnow()
         db.session.add(p)
         db.session.commit()
         for _user in current_user.followers:
             info = Information()
             info.launch_id = current_user.id
             info.receive_id = _user.follower_id
-            info.time = datetime.datetime.now()
+            info.time = datetime.datetime.utcnow()
             db.session.add(info)
             db.session.flush()
             info.info = u"您关注的用户 " + current_user.username + u" 发表了新的文章 " + u"<a style='color: #d82433' " \
@@ -142,51 +142,12 @@ def dispaly(key):
         flash(u'该文章不存在！', 'warning')
         abort(404)
     comments = Comment.query.filter_by(post_id=key).all()
-    permission = Role.query.filter_by(id=current_user.role_id).first().permissions
-
-    html = u'''
-                    <li class="dropdown">
-<a href="#" class="dropdown-toggle" data-toggle="dropdown"> 处理 <b class="caret"></b></a>
-                                <ul class="dropdown-menu multi-column columns-3">
-                                <li>
-                                <div class="col-sm-4">
-                                    <ul class="multi-column-dropdown">
-                                    {}
-                                    </ul>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                            </ul>
-                            </li>
-                            '''
-
     for _index in range(len(comments)):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
         comments[_index].img = comments[_index].author_id
+
         if comments[_index].comment_user_id > 0:
             comments[_index].comment_user = User.query.filter_by(id=comments[_index].comment_user_id).first().username
-        string = ""
-
-        if not current_user.is_authenticated:
-            comments[_index].html = ""
-            continue
-
-        elif comments[_index].author_id == current_user.id:
-            string = u'''
-            <li style="cursor: pointer;"><a  onclick="edit_comment({})">修改</a></li>
-            <li><a href="/del_comment/{}">删除</a></li>
-            <li style="cursor: pointer;"><a  onclick="response_comment('{}')">回复</a></li>
-            '''.format(comments[_index].id, comments[_index].id, comments[_index].author_id)
-
-        elif permission >= 31 or current_user.id == p.user:
-            string = u'''<li style="cursor: pointer;"><a  onclick="response_comment('{}')">回复</a></li>
-                         <li><a href="/del_comment/{}">删除</a></li>
-                        '''.format(comments[_index].author_id, comments[_index].id)
-        else:
-            string = u'''<li style="cursor: pointer;"><a onclick="response_comment('{}')">回复</a></li>
-                                    '''.format(comments[_index].author_id)
-
-        comments[_index].html = html.format(string)
 
     return render_template("display.html", post=p, is_collect=is_collect, comments=comments)
 
@@ -265,11 +226,11 @@ def collect(key):
         abort(404)
     f = Favorite()
     f.favorite_id = current_user.id
-    f.update_time = datetime.datetime.now()
+    f.update_time = datetime.datetime.utcnow()
     f.favorited_id = key
     p.collect_num += 1
     user.collect_num += 1
-    f.update_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    f.update_time = datetime.datetime.utcnow()
     if Favorite.query.filter_by(favorite_id=current_user.id, favorited_id=key).first():
         flash(u'文章已经收藏！', 'warning')
         return redirect("/display/" + key)
@@ -293,7 +254,7 @@ def edit_file(key):
     if request.method == "POST":
         p.title = request.values.get("title")
         p.content = request.values.get("text")
-        p.update_time = datetime.datetime.now()
+        p.update_time = datetime.datetime.utcnow()
         filename = os.getcwd() + "/markdown/" + str(p.id) + ".pdf"
         if os.path.exists(filename):
             os.system("rm -f {} ".format(filename))
@@ -525,9 +486,9 @@ def add_comment(key):
         if not Category.query.filter_by(id=key).first():
             abort(404)
         comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=key)
-        comment.timestamp = datetime.datetime.now()
+        comment.timestamp = datetime.datetime.utcnow()
         _info = Information()
-        _info.time = datetime.datetime.now()
+        _info.time = datetime.datetime.utcnow()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=key).first()
         _info.receive_id = category.user
@@ -552,7 +513,7 @@ def edit_comment(key):
             abort(404)
         comment.body = info
         _info = Information()
-        _info.time = datetime.datetime.now()
+        _info.time = datetime.datetime.utcnow()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=comment.post_id).first()
         _info.receive_id = category.user
@@ -561,7 +522,7 @@ def edit_comment(key):
         _info.info = u"用户" + current_user.username + u" 对您的文章" + u"<a style='color: #d82433' " \
             u"href='{}?check={}'>{}</a>".format(u"/display/" + str(category.id), _info.id, category.title) + u"修改了评论!"
         db.session.add(_info)
-        comment.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        comment.timestamp = datetime.datetime.utcnow()
         db.session.add(comment)
         db.session.commit()
         flash(u"修改成功!", "success")
@@ -578,11 +539,11 @@ def response_comment(post_id, key):
         comment = Comment(body=cgi.escape(info), author_id=current_user.id, post_id=post_id)
         comment.comment_user_id = key
         _info = Information()
-        _info.time = datetime.datetime.now()
+        _info.time = datetime.datetime.utcnow()
         _info.launch_id = current_user.id
         category = Category.query.filter_by(id=post_id).first()
         _info.receive_id = comment.comment_user_id
-        comment.timestamp = datetime.datetime.now()
+        comment.timestamp = datetime.datetime.utcnow()
         db.session.add(_info)
         db.session.add(comment)
         db.session.flush()

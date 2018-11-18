@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from flaskext.markdown import Markdown
 from flask import Flask, render_template, g
 from flask_sqlalchemy import SQLAlchemy
 from config import config
@@ -8,9 +7,11 @@ from flask_mail import Mail
 from flask_login import LoginManager, current_user
 from whoosh.analysis import StemmingAnalyzer
 from flask_gemoji import Gemoji
+from flask_moment import Moment
 
 db = SQLAlchemy()
 mail = Mail()
+moment = Moment()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
@@ -20,8 +21,8 @@ def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     app.config['WHOOSH_ANALYZER'] = StemmingAnalyzer()
-    Markdown(app)
     db.init_app(app)
+    moment.init_app(app)
     mail.init_app(app)
     Gemoji.init_app(app)
     login_manager.init_app(app)
