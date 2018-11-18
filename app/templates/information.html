@@ -63,9 +63,9 @@
             </td>
             <td style="word-wrap:break-word;width:10%">
                 {% if info.confirm != True %}
-                <a href='/info_confirm/{{info[' id']}}/{{ page }}'>已阅</a>
+                <a href='/info_confirm/{{info.id}}/{{ page }}'>已阅</a>
                 {% endif %}
-                <a href='/del_info/{{info[' id']}}/{{ page }}' style="margin-left: 5%">删除</a>
+                <a href='/del_info/{{info.id}}/{{ page }}' style="margin-left: 5%">删除</a>
             </td>
         </tr>
         {% endfor %}
