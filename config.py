@@ -21,8 +21,8 @@ class ServerConfig(object):
     MAIL_SERVER = "smtp.qq.com"
     MAIL_PORT = 465
     MAIL_USE_SSL = True
-    MAIL_USERNAME = "sj1115064450@vip.qq.com"
-    MAIL_PASSWORD = "sblmvxvballigaea"
+    MAIL_USERNAME = os.environ.get("EMAIL")
+    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
     FLASK_MAIL_SENDER = "sj1115064450@vip.qq.com"
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
