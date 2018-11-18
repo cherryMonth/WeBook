@@ -142,7 +142,6 @@ def dispaly(key):
         flash(u'该文章不存在！', 'warning')
         abort(404)
     comments = Comment.query.filter_by(post_id=key).all()
-    print(request.url)
     permission = Role.query.filter_by(id=current_user.role_id).first().permissions
 
     html = u'''
