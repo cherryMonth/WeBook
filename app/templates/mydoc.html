@@ -48,7 +48,7 @@
     <table class='table table-hover' id="my_table">
         <tr>
             <th>文章名称</th>
-            <th>更新时间</th>
+            <th>最后修改时间</th>
             {% if not current_user.is_anonymous and current_user.id == docs[0].user %}
             <th>操作</th>
             {% endif %}
