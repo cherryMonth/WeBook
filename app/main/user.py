@@ -143,7 +143,7 @@ def get_user_info():
         # 对象的序列化为字典 info.update(_user.__dict__)
         info['username'] = _user.username
         info['follow_num'] = _user.follow_num
-        info['image_name'] = "https://cherrymonth.top/show_image/{}".format(_user.id)
+        info['image_name'] = "https://webook.mobi/show_image/{}".format(_user.id)
         info['about_me'] = _user.about_me
         info['id'] = _user.id
         info['collect_num'] = _user.collect_num
@@ -186,7 +186,7 @@ def upload_images():
     else:
         result['success'] = 1
         result['message'] = u"上传成功!"
-        result['url'] = "http://cherrymonth.top/display_images/{}".format(filename)
+        result['url'] = "http://webook.mobi/display_images/{}".format(filename)
         return json.dumps(result)
 
 
