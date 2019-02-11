@@ -4,7 +4,7 @@ Welcome to WeBook!
 
 To confirm your account please click on the following link:
 
-https://webook.mobi/login_by_email/{{token}}
+https://www.webook.mobi/login_by_email/{{token}}
 
 Sincerely,
 
