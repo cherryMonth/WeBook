@@ -2,11 +2,11 @@
 
 from flask import redirect, flash, url_for, request, abort, send_from_directory
 from flask import Blueprint, current_app, session
-from forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
+from app.main.forms import PostForm, FindFile, EditInfoForm, EditBasic, EditPassword
 from flask_login import login_required, current_user
 from app import db
 from werkzeug.utils import secure_filename
-from models import Category, Favorite, User, Comment, Role, Information
+from app.main.models import Category, Favorite, User, Comment, Role, Information
 import datetime
 from ..email import send_email
 import os
@@ -15,7 +15,7 @@ import time
 from sqlalchemy import text
 import subprocess
 import threading
-from auth import logout
+from app.main.auth import logout
 import cgi
 from tornado.ioloop import IOLoop
 import re
@@ -28,16 +28,16 @@ user_page = dict()
 
 
 def pop(args):
-    print str(args[0]) + "has pop!"
+    print (str(args[0]) + "has pop!")
     user_page.pop(args[0], None)
 
 
 def work(_id, info):
-    print _id + "begin work"
+    print (_id + "begin work")
     name = _id + ".md"
     pdf = _id + ".pdf"
     filename = file_dir + "/" + name
-    print filename
+    print (filename)
     pdf_name = file_dir + "/" + pdf
     _file = open(filename, "wb")
     line_list = info.split("\n")
@@ -115,7 +115,7 @@ def index():
 def my_doc(key, _id):
     temp = Category.query.filter_by(user=key)
     length = len(temp.all())
-    page_num = length / 10 if length % 10 == 0 else length / 10 + 1
+    page_num = int(length / 10 if length % 10 == 0 else length / 10 + 1)
     docs = temp.order_by(Category.id.desc()).paginate(_id, 10, error_out=True).items
     # 总数量 文章列表 当前id 总页数
     return render_template("mydoc.html", key=key, length=length, docs=docs, page=_id, page_num=page_num)
@@ -126,7 +126,7 @@ def dispaly(key):
     p = Category.query.filter_by(id=key).first()
     if not current_user.is_anonymous:
         is_collect = Favorite.query.filter_by(favorited_id=key, favorite_id=current_user.id).first()
-        if request.args. has_key('check'):
+        if 'check' in request.args:
             temp = Information.query.filter_by(id=int(request.args['check'])).first()
             temp.confirm = True
             db.session.add(temp)
@@ -146,7 +146,7 @@ def dispaly(key):
         comments[_index].author = User.query.filter_by(id=comments[_index].author_id).first().username
         comments[_index].img = comments[_index].author_id
 
-        if comments[_index].comment_user_id > 0:
+        if comments[_index].comment_user_id or 0 > 0:
             comments[_index].comment_user = User.query.filter_by(id=comments[_index].comment_user_id).first().username
 
     return render_template("display.html", post=p, is_collect=is_collect, comments=comments)
@@ -284,7 +284,7 @@ def downloader(key):
     popen = None
     if not user_page.has_key(str(p.id)):
         user_page[str(p.id)] = 'work'
-        print str(p.id) + "begin work"
+        print (str(p.id) + "begin work")
         info = p.content.encode("utf-8")
         name = str(p.id) + ".md"
         pdf = str(p.id) + ".pdf"
@@ -330,7 +330,7 @@ def downloader(key):
         popen = subprocess.Popen(shlex.split(shell), shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         IOLoop.instance().add_timeout(50, callback=pop, args=(str(p.id),))
     else:
-        print "have one working"
+        print ("have one working")
     count = 0
 
     while True:
@@ -345,7 +345,7 @@ def downloader(key):
             if popen and popen.poll() is None:
                 line = popen.stdout.readline()
                 line += popen.stderr.readline()
-                print line
+                print (line)
                 if 'Error' in line or 'Warning' in line or "Could not" in line or 'WARNING' in line:
                     popen.terminate()
                     flash(u'导出失败, {}'.format(line), 'warning')
@@ -419,11 +419,11 @@ def edit_basic():
         # filter 支持表达式 比 filter 更强大
         temp = User.query.filter_by(username=form.username.data).first()
         if temp is form.username.data and current_user.username != form.username.data:
-            print User.query.filter_by(username=form.username.data).first()
-            print current_user.username
-            print form.username.data
-            print current_user.username != form.username.data
-            print current_user.username is form.username.data
+            print (User.query.filter_by(username=form.username.data).first())
+            print (current_user.username)
+            print (form.username.data)
+            print (current_user.username != form.username.data)
+            print (current_user.username is form.username.data)
             flash(u"该用户名已经被注册过，请重新输入!", "warning")
             return redirect(url_for("main.edit_basic"))
 
@@ -442,7 +442,7 @@ def edit_basic():
                     os.makedirs(dirname)
                     _file.save(os.path.join(dirname, current_user.image_name))
                 except Exception as e:
-                    print e
+                    print (e)
             else:
                 _file.save(os.path.join(dirname, current_user.image_name))
 

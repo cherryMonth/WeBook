@@ -7,8 +7,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from ..email import send_email
 import os
-from forms import LoginForm, RegisterForm, ForgetForm
-from models import User
+from app.main.forms import LoginForm, RegisterForm, ForgetForm
+from app.main.models import User
 
 auth = Blueprint("auth", __name__)
 
@@ -86,7 +86,7 @@ def register():
                 os.makedirs(dirname)
                 _file.save(os.path.join(dirname, filename))
             except Exception as e:
-                print e
+                print (e)
         else:
             _file.save(os.path.join(dirname, filename))
         user.image_name = filename
@@ -164,7 +164,7 @@ def forget():
         token = user.generate_confirmation_token()
         send_email([user.email], u'验证您的账号',
                    'auth/email/forget', user=user, token=token)
-        print token
+        print (token)
         flash(u"一封验证邮件发送到了你的邮箱,请您验收!", "success")
         return redirect(url_for("auth.login"))
     return render_template("auth/check_info.html", form=form)

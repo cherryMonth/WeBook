@@ -238,7 +238,7 @@ class User(db.Model, UserMixin):
         try:
             data = s.loads(token)
         except Exception as e:
-            print str(e)
+            print (str(e))
             return False
         if data.get('confirm') != self.id:  # 若解密后不相同则验证失败
             return False

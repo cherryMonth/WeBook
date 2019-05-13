@@ -2,7 +2,7 @@
 from wtforms import StringField, TextAreaField, SelectMultipleField, SubmitField, PasswordField, BooleanField, FileField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Length
-from models import Category
+from app.main.models import Category
 
 
 class PostForm(FlaskForm):

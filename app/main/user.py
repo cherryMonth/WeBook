@@ -3,8 +3,8 @@
 from flask import render_template, redirect, flash, url_for, request, abort
 from flask import Blueprint, current_app, send_from_directory
 import os
-from forms import FindUser
-from models import User, Information
+from app.main.forms import FindUser
+from app.main.models import User, Information
 from app import db
 from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
@@ -77,7 +77,7 @@ def information(page):
     temp = Information.query.filter_by(receive_id=current_user.id)
     info_list = temp.order_by(Information.time.desc()).paginate(page, 10, error_out=True).items
     length = len(temp.all())
-    page_num = length / 10 if length % 10 == 0 else length / 10 + 1
+    page_num = int(length / 10 if length % 10 == 0 else length / 10 + 1)
     for index in range(len(info_list)):
         info_list[index].author = User.query.filter_by(id=info_list[index].launch_id).first()
     return render_template("information.html", info_list=info_list, length=length, page=page, page_num=page_num)

@@ -1,10 +1,10 @@
 # coding = utf-8
 
 import os
-import ConfigParser
+import configparser
 import sys
 
-cf = ConfigParser.ConfigParser()
+cf = configparser.ConfigParser()
 try:
     cf.read("./system.ini")
     os.environ['owner'] = cf.get("owner", "owner")
@@ -12,7 +12,7 @@ try:
     os.environ['port'] = cf.get("port", "port")
     os.environ["ServerConfig"] = cf.get("ServerConfig", "server_listen_port")
 except Exception as e:
-    print "config file read failed!", str(e)
+    print ("config file read failed!", str(e))
     exit(-1)
 
 
