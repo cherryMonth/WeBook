@@ -1,5 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 venv
+pdf
+markdown
+*.log
+*.out
 .idea
 .gitignore
 *.xml
