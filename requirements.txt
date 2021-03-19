@@ -13,7 +13,7 @@ Flask-SQLAlchemy==2.3.2
 Flask-Uploads==0.2.1
 Flask-WhooshAlchemy==0.56
 Flask-WTF==0.14.2
-Jinja2==2.10
+Jinja2==2.11.3
 requests==2.19.1
 SQLAlchemy==1.2.7
 tornado==5.0
