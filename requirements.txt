@@ -20,4 +20,4 @@ tornado==5.0
 Whoosh==2.7.4
 WTForms==2.1
 flask-gemoji==0.2.0
-mysql-connector-python==8.0.13
+mysql-connector-python==8.0.14
